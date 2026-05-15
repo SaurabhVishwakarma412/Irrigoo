@@ -5,12 +5,12 @@ namespace App\Http\Controllers;
 use App\Models\FarmerDevice;
 use App\Models\Service;
 use App\Models\ServiceRequest;
+use App\Services\WeatherService;
 use Illuminate\Http\Request;
-use Carbon\Carbon;
 
 class FarmerController extends Controller
 {
-    public function index()
+    public function index(WeatherService $weatherService)
     {
         $farmerDevices = FarmerDevice::where('farmer_id', auth()->id())
             ->with(['device', 'sensorData' => function($q) {
@@ -52,7 +52,15 @@ class FarmerController extends Controller
             return $farmerDevice->sensorData->sum('water_flow');
         });
 
-        return view('farmer.dashboard', compact('farmerDevices', 'services', 'serviceRequests', 'waterUsage'));
+        try {
+            $weather = $weatherService->forLocation($farmer->location);
+            $irrigationAdvice = $weatherService->irrigationAdvice($weather);
+        } catch (\Throwable $exception) {
+            $weather = null;
+            $irrigationAdvice = null;
+        }
+
+        return view('farmer.dashboard', compact('farmerDevices', 'services', 'serviceRequests', 'waterUsage', 'weather', 'irrigationAdvice'));
     }
 
     public function toggleIrrigation(Request $request, FarmerDevice $farmerDevice)

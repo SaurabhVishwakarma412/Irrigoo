@@ -35,6 +35,42 @@
                 </div>
             </div>
 
+            <div class="mb-6 overflow-hidden rounded-2xl bg-slate-900 text-white shadow-sm">
+                <div class="grid gap-6 p-6 lg:grid-cols-[0.9fr_1.1fr] lg:items-center">
+                    <div>
+                        <p class="text-sm font-semibold uppercase tracking-wide text-emerald-300">Live Weather API</p>
+                        @if($weather)
+                            <h3 class="mt-2 text-2xl font-bold">{{ $weather['place']['name'] }}, {{ $weather['place']['country'] ?? '' }}</h3>
+                            <p class="mt-3 text-sm leading-6 text-slate-300">{{ $irrigationAdvice }}</p>
+                        @else
+                            <h3 class="mt-2 text-2xl font-bold">Weather unavailable</h3>
+                            <p class="mt-3 text-sm leading-6 text-slate-300">Add a valid location to your profile to show live local irrigation context.</p>
+                        @endif
+                    </div>
+
+                    @if($weather)
+                        <div class="grid gap-3 sm:grid-cols-4">
+                            <div class="rounded-2xl bg-white/10 p-4">
+                                <p class="text-xs uppercase text-slate-300">Temperature</p>
+                                <p class="mt-2 text-2xl font-bold">{{ $weather['current']['temperature_2m'] ?? '--' }}°C</p>
+                            </div>
+                            <div class="rounded-2xl bg-white/10 p-4">
+                                <p class="text-xs uppercase text-slate-300">Rain today</p>
+                                <p class="mt-2 text-2xl font-bold">{{ $weather['daily']['precipitation_sum'][0] ?? '--' }} mm</p>
+                            </div>
+                            <div class="rounded-2xl bg-white/10 p-4">
+                                <p class="text-xs uppercase text-slate-300">Rain chance</p>
+                                <p class="mt-2 text-2xl font-bold">{{ $weather['daily']['precipitation_probability_max'][0] ?? '--' }}%</p>
+                            </div>
+                            <div class="rounded-2xl bg-white/10 p-4">
+                                <p class="text-xs uppercase text-slate-300">Surface soil</p>
+                                <p class="mt-2 text-2xl font-bold">{{ isset($weather['current']['soil_moisture_0_to_1cm']) ? number_format($weather['current']['soil_moisture_0_to_1cm'], 2) : '--' }}</p>
+                            </div>
+                        </div>
+                    @endif
+                </div>
+            </div>
+
             @if($farmerDevices->isEmpty())
                 <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg p-6 mb-6">
                     <h3 class="font-semibold text-gray-900">No IoT devices connected yet</h3>
@@ -262,3 +298,4 @@
         });
     </script>
 </x-app-layout>
+

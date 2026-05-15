@@ -11,7 +11,8 @@ class SensorDataController extends Controller
 {
     public function simulate(Request $request, FarmerDevice $farmerDevice)
     {
-        // Simple manual simulation endpoint
+        $this->authorizeFarmerDevice($farmerDevice);
+
         $moisture = rand(10, 90);
         $temperature = rand(15, 40);
         $waterFlow = $farmerDevice->irrigation_on ? rand(2, 6) : 0;
@@ -23,7 +24,6 @@ class SensorDataController extends Controller
             'water_flow' => $waterFlow,
         ]);
 
-        // Simple Automation Logic
         if ($moisture < 30 && !$farmerDevice->irrigation_on) {
             $farmerDevice->update(['irrigation_on' => true]);
         } elseif ($moisture > 70 && $farmerDevice->irrigation_on) {
@@ -33,17 +33,24 @@ class SensorDataController extends Controller
         return response()->json([
             'status' => 'success',
             'data' => $sensorData,
-            'irrigation_on' => $farmerDevice->fresh()->irrigation_on
+            'irrigation_on' => $farmerDevice->fresh()->irrigation_on,
         ]);
     }
 
     public function fetch(FarmerDevice $farmerDevice)
     {
+        $this->authorizeFarmerDevice($farmerDevice);
+
         $data = SensorData::where('farmer_device_id', $farmerDevice->id)
             ->latest()
             ->take(24)
             ->get();
 
         return response()->json($data);
+    }
+
+    private function authorizeFarmerDevice(FarmerDevice $farmerDevice): void
+    {
+        abort_unless($farmerDevice->farmer_id === auth()->id(), 403);
     }
 }
