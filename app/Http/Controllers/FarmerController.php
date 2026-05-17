@@ -21,9 +21,6 @@ class FarmerController extends Controller
         $farmer = auth()->user();
 
         $services = Service::with('provider')
-            ->whereHas('provider', function ($query) {
-                $query->where('is_verified', true);
-            })
             ->when($farmer->location, function ($query, $location) {
                 $query->where(function ($subQuery) use ($location) {
                     $subQuery->where('service_area', 'like', "%{$location}%")

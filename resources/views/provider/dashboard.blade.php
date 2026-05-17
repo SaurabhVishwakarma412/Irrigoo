@@ -30,7 +30,7 @@
             </div>
         @endif
 
-        <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
+        <div id="overview" class="grid grid-cols-1 md:grid-cols-4 gap-6">
             <!-- Stat Cards -->
             <div class="bg-white rounded-3xl p-6 shadow-sm border border-gray-100">
                 <div class="flex items-center justify-between mb-4">
@@ -73,7 +73,7 @@
             </div>
         </div>
 
-        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+        <div id="services" class="grid grid-cols-1 lg:grid-cols-2 gap-8">
             <!-- Incoming Requests -->
             <div class="bg-white rounded-3xl shadow-sm border border-gray-100 overflow-hidden flex flex-col">
                 <div class="p-6 border-b border-gray-100 bg-gray-50/50">
@@ -159,6 +159,34 @@
                         </div>
                     @endforelse
                 </div>
+            </div>
+        </div>
+
+        <div id="available-devices" class="bg-white rounded-3xl shadow-sm border border-gray-100 overflow-hidden">
+            <div class="p-6 border-b border-gray-100 bg-gray-50/50">
+                <h3 class="text-xl font-bold text-gray-900">Devices Available to Purchase</h3>
+                <p class="text-sm text-gray-500 mt-1">Products published by manufacturers on the platform.</p>
+            </div>
+
+            <div class="p-6 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                @forelse($availableDevices as $device)
+                    <div class="border border-gray-200 rounded-2xl p-5 bg-white flex flex-col">
+                        <div>
+                            <h4 class="font-bold text-gray-900">{{ $device->name }}</h4>
+                            <p class="text-sm text-blue-600 font-medium">{{ $device->manufacturer->organization ?? $device->manufacturer->name }}</p>
+                            <p class="text-xs text-gray-500 font-mono mt-1">{{ $device->serial_number }}</p>
+                        </div>
+                        <p class="text-sm text-gray-600 mt-3 line-clamp-3">{{ $device->description }}</p>
+                        <div class="mt-4 flex items-center justify-between text-sm">
+                            <span class="text-gray-500">{{ $device->connectivity }}</span>
+                            <span class="font-bold text-emerald-600">${{ number_format($device->price, 2) }}</span>
+                        </div>
+                    </div>
+                @empty
+                    <div class="col-span-full py-8 text-center text-gray-500">
+                        No manufacturer devices are available yet.
+                    </div>
+                @endforelse
             </div>
         </div>
 

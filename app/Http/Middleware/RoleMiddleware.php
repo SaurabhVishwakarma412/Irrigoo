@@ -20,10 +20,6 @@ class RoleMiddleware
             abort(403, 'Unauthorized access.');
         }
 
-        if ($user->role !== 'admin' && ! $user->is_verified) {
-            return redirect()->route('dashboard.pending');
-        }
-
         return $next($request);
     }
 }

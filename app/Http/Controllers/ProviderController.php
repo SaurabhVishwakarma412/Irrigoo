@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use App\Models\Service;
 use App\Models\ServiceRequest;
+use App\Models\Device;
+use App\Models\DevicePurchase;
 use Illuminate\Http\Request;
 
 class ProviderController extends Controller
@@ -13,6 +15,7 @@ class ProviderController extends Controller
         $user = auth()->user();
         
         $services = Service::where('provider_id', $user->id)->latest()->get();
+        $availableDevices = Device::with('manufacturer')->latest()->get();
         
         $serviceRequests = ServiceRequest::whereHas('service', function($query) use ($user) {
             $query->where('provider_id', $user->id);
@@ -32,8 +35,40 @@ class ProviderController extends Controller
             'pendingRequests', 
             'completedJobs', 
             'totalEarnings',
-            'recentCompleted'
+            'recentCompleted',
+            'availableDevices'
         ));
+    }
+
+    public function purchases()
+    {
+        $devices = Device::with('manufacturer')->latest()->get();
+        $purchases = DevicePurchase::with('device.manufacturer')
+            ->where('provider_id', auth()->id())
+            ->latest()
+            ->get();
+
+        return view('provider.purchases', compact('devices', 'purchases'));
+    }
+
+    public function purchase(Request $request, Device $device)
+    {
+        $data = $request->validate([
+            'quantity' => ['required', 'integer', 'min:1'],
+        ]);
+
+        $unitPrice = $device->price ?? 0;
+
+        DevicePurchase::create([
+            'provider_id' => auth()->id(),
+            'device_id' => $device->id,
+            'quantity' => $data['quantity'],
+            'unit_price' => $unitPrice,
+            'total_price' => $unitPrice * $data['quantity'],
+        ]);
+
+        return redirect()->route('provider.purchases.index')
+            ->with('success', 'Product purchased successfully.');
     }
 
     public function store(Request $request)
@@ -51,17 +86,17 @@ class ProviderController extends Controller
         
         Service::create($validated);
 
-        return redirect()->route('provider.dashboard')->with('success', 'Service published successfully!');
+        return redirect()->route('dashboard')->with('success', 'Service published successfully!');
     }
 
     public function destroy(Service $service)
     {
         if ($service->provider_id !== auth()->id()) {
-            return redirect()->route('provider.dashboard')->with('error', 'Unauthorized action.');
+            return redirect()->route('dashboard')->with('error', 'Unauthorized action.');
         }
 
         $service->delete();
-        return redirect()->route('provider.dashboard')->with('success', 'Service deleted successfully.');
+        return redirect()->route('dashboard')->with('success', 'Service deleted successfully.');
     }
 
     public function updateRequest(Request $request, ServiceRequest $serviceRequest)
@@ -69,7 +104,7 @@ class ProviderController extends Controller
         $serviceRequest->loadMissing('service');
 
         if (! $serviceRequest->service || $serviceRequest->service->provider_id !== auth()->id()) {
-            return redirect()->route('provider.dashboard')->with('error', 'Unauthorized action.');
+            return redirect()->route('dashboard')->with('error', 'Unauthorized action.');
         }
 
         $validated = $request->validate([
@@ -78,6 +113,11 @@ class ProviderController extends Controller
         ]);
 
         $oldStatus = $serviceRequest->status;
+
+        if ($validated['status'] === 'completed' && $serviceRequest->final_price === null) {
+            $validated['final_price'] = $serviceRequest->service->base_price ?? 0;
+        }
+
         $serviceRequest->update($validated);
 
         // You can add notification logic here
@@ -88,7 +128,7 @@ class ProviderController extends Controller
 
         $message = 'Service request updated successfully.';
         
-        return redirect()->route('provider.dashboard')->with('success', $message);
+        return redirect()->route('dashboard')->with('success', $message);
     }
 }
 

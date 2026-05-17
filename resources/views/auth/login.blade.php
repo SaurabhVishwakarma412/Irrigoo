@@ -10,6 +10,17 @@
         @csrf
 
         <div>
+            <x-input-label for="role" :value="__('Log in As')" />
+            <select id="role" name="role" class="block mt-1 w-full border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm" required>
+                <option value="farmer" @selected(old('role') === 'farmer')>Farmer</option>
+                <option value="provider" @selected(old('role') === 'provider')>Service Provider</option>
+                <option value="manufacturer" @selected(old('role') === 'manufacturer')>Manufacturer</option>
+                <option value="admin" @selected(old('role') === 'admin')>Admin</option>
+            </select>
+            <x-input-error :messages="$errors->get('role')" class="mt-2" />
+        </div>
+
+        <div class="mt-4">
             <x-input-label for="email" :value="__('Email')" />
             <x-text-input id="email" class="block mt-1 w-full" type="email" name="email" :value="old('email')" required autofocus />
             <x-input-error :messages="$errors->get('email')" class="mt-2" />

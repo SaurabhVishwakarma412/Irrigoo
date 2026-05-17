@@ -78,6 +78,11 @@ class User extends Authenticatable
         return $this->hasMany(Device::class, 'manufacturer_id');
     }
 
+    public function devicePurchases()
+    {
+        return $this->hasMany(DevicePurchase::class, 'provider_id');
+    }
+
     public function serviceRequests()
     {
         return $this->hasMany(ServiceRequest::class, 'farmer_id');

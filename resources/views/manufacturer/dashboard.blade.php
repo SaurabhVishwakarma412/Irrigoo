@@ -30,7 +30,7 @@
             </div>
         @endif
 
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div id="overview" class="grid grid-cols-1 md:grid-cols-3 gap-6">
             <div class="bg-white rounded-3xl p-6 shadow-sm border border-gray-100">
                 <div class="flex items-center justify-between mb-4">
                     <h3 class="text-gray-500 font-medium">Total Registered Devices</h3>
@@ -40,9 +40,19 @@
                 </div>
                 <div class="text-3xl font-bold text-gray-900">{{ $devices->count() }}</div>
             </div>
+
+            <div class="bg-gradient-to-br from-gray-900 to-gray-800 rounded-3xl p-6 shadow-lg shadow-gray-900/20 text-white">
+                <div class="flex items-center justify-between mb-4">
+                    <h3 class="text-gray-400 font-medium">Total Earnings</h3>
+                    <div class="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center text-emerald-400">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                    </div>
+                </div>
+                <div class="text-3xl font-bold">${{ number_format($totalEarnings, 2) }}</div>
+            </div>
         </div>
 
-        <div class="bg-white rounded-3xl shadow-sm border border-gray-100 overflow-hidden">
+        <div id="products" class="bg-white rounded-3xl shadow-sm border border-gray-100 overflow-hidden">
             <div class="p-6 border-b border-gray-100 bg-gray-50/50 flex justify-between items-center">
                 <h3 class="text-xl font-bold text-gray-900">Your Device Catalog</h3>
             </div>
@@ -92,6 +102,61 @@
                         </div>
                         <p class="mb-2">Your catalog is empty.</p>
                         <p class="text-sm">Register your first IoT device to make it available to farmers.</p>
+                    </div>
+                @endforelse
+            </div>
+        </div>
+
+        <div class="bg-white rounded-3xl shadow-sm border border-gray-100 overflow-hidden">
+            <div class="p-6 border-b border-gray-100 bg-gray-50/50">
+                <h3 class="text-xl font-bold text-gray-900">Recent Product Sales</h3>
+            </div>
+
+            <div class="divide-y divide-gray-100">
+                @forelse($sales->take(6) as $sale)
+                    <div class="p-5 flex items-center justify-between">
+                        <div>
+                            <h4 class="font-bold text-gray-900">{{ $sale->device->name }}</h4>
+                            <p class="text-sm text-gray-500">Purchased by {{ $sale->provider->organization ?? $sale->provider->name }}</p>
+                        </div>
+                        <div class="text-right">
+                            <p class="font-bold text-emerald-600">${{ number_format($sale->total_price, 2) }}</p>
+                            <p class="text-xs text-gray-500">Qty {{ $sale->quantity }}</p>
+                        </div>
+                    </div>
+                @empty
+                    <div class="p-6 text-center text-gray-500">
+                        No product sales yet.
+                    </div>
+                @endforelse
+            </div>
+        </div>
+
+        <div id="available-services" class="bg-white rounded-3xl shadow-sm border border-gray-100 overflow-hidden">
+            <div class="p-6 border-b border-gray-100 bg-gray-50/50">
+                <h3 class="text-xl font-bold text-gray-900">Available Services</h3>
+                <p class="text-sm text-gray-500 mt-1">Services currently published by providers on the platform.</p>
+            </div>
+
+            <div class="p-6 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                @forelse($availableServices as $service)
+                    <div class="border border-gray-200 rounded-2xl p-5 bg-white">
+                        <div class="flex items-start justify-between gap-3">
+                            <div>
+                                <h4 class="font-bold text-gray-900">{{ $service->name }}</h4>
+                                <p class="text-sm text-purple-600 font-medium">{{ $service->provider->organization ?? $service->provider->name }}</p>
+                            </div>
+                            <span class="px-2 py-1 bg-purple-50 text-purple-700 rounded-md text-xs font-medium uppercase">{{ $service->type }}</span>
+                        </div>
+                        <p class="text-sm text-gray-600 mt-3 line-clamp-3">{{ $service->description }}</p>
+                        <div class="mt-4 flex items-center justify-between text-sm">
+                            <span class="text-gray-500">{{ $service->service_area }}</span>
+                            <span class="font-bold text-emerald-600">${{ number_format($service->base_price, 2) }}</span>
+                        </div>
+                    </div>
+                @empty
+                    <div class="col-span-full py-8 text-center text-gray-500">
+                        No provider services are available yet.
                     </div>
                 @endforelse
             </div>

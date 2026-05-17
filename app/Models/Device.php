@@ -29,5 +29,10 @@ class Device extends Model
     {
         return $this->hasMany(FarmerDevice::class);
     }
+
+    public function purchases()
+    {
+        return $this->hasMany(DevicePurchase::class);
+    }
 }
 

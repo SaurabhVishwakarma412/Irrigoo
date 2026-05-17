@@ -14,31 +14,39 @@
                         <x-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard')">
                             {{ __('Dashboard') }}
                         </x-nav-link>
-                    @endauth
-                    <x-nav-link :href="route('about')" :active="request()->routeIs('about')">
-                        {{ __('About Us') }}
-                    </x-nav-link>
-                    <x-nav-link :href="route('contact')" :active="request()->routeIs('contact')">
-                        {{ __('Contact') }}
-                    </x-nav-link>
-                    @auth
                         @if(Auth::user()->role === 'admin')
-                            <x-nav-link :href="route('admin.dashboard')" :active="request()->routeIs('admin.*')">
+                            <x-nav-link :href="route('dashboard').'#overview'" :active="request()->routeIs('dashboard')">
                                 {{ __('Admin') }}
                             </x-nav-link>
                         @elseif(Auth::user()->role === 'farmer')
-                            <x-nav-link :href="route('farmer.dashboard')" :active="request()->routeIs('farmer.*')">
+                            <x-nav-link :href="route('dashboard').'#overview'" :active="request()->routeIs('dashboard')">
                                 {{ __('Irrigation') }}
                             </x-nav-link>
                         @elseif(Auth::user()->role === 'provider')
-                            <x-nav-link :href="route('provider.dashboard')" :active="request()->routeIs('provider.*')">
-                                {{ __('Services') }}
+                            <x-nav-link :href="route('dashboard').'#available-devices'" :active="false">
+                                {{ __('Devices Available') }}
+                            </x-nav-link>
+                            <x-nav-link :href="route('provider.purchases.index')" :active="request()->routeIs('provider.purchases.*')">
+                                {{ __('Purchase Products') }}
+                            </x-nav-link>
+                            <x-nav-link :href="route('dashboard').'#services'" :active="false">
+                                {{ __('My Services') }}
                             </x-nav-link>
                         @elseif(Auth::user()->role === 'manufacturer')
-                            <x-nav-link :href="route('manufacturer.dashboard')" :active="request()->routeIs('manufacturer.*')">
-                                {{ __('Devices') }}
+                            <x-nav-link :href="route('dashboard').'#available-services'" :active="false">
+                                {{ __('Available Services') }}
+                            </x-nav-link>
+                            <x-nav-link :href="route('dashboard').'#products'" :active="false">
+                                {{ __('My Products') }}
                             </x-nav-link>
                         @endif
+                    @else
+                        <x-nav-link :href="route('about')" :active="request()->routeIs('about')">
+                            {{ __('About Us') }}
+                        </x-nav-link>
+                        <x-nav-link :href="route('contact')" :active="request()->routeIs('contact')">
+                            {{ __('Contact') }}
+                        </x-nav-link>
                     @endauth
                 </div>
             </div>
@@ -58,10 +66,6 @@
                     </x-slot>
 
                     <x-slot name="content">
-                        <x-dropdown-link :href="route('profile.edit')">
-                            {{ __('Profile') }}
-                        </x-dropdown-link>
-
                         <form method="POST" action="{{ route('logout') }}">
                             @csrf
                             <x-dropdown-link :href="route('logout')" onclick="event.preventDefault(); this.closest('form').submit();">
@@ -95,31 +99,39 @@
                 <x-responsive-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard')">
                     {{ __('Dashboard') }}
                 </x-responsive-nav-link>
-            @endauth
-            <x-responsive-nav-link :href="route('about')" :active="request()->routeIs('about')">
-                {{ __('About Us') }}
-            </x-responsive-nav-link>
-            <x-responsive-nav-link :href="route('contact')" :active="request()->routeIs('contact')">
-                {{ __('Contact') }}
-            </x-responsive-nav-link>
-            @auth
                 @if(Auth::user()->role === 'admin')
-                    <x-responsive-nav-link :href="route('admin.dashboard')" :active="request()->routeIs('admin.*')">
+                    <x-responsive-nav-link :href="route('dashboard').'#overview'" :active="request()->routeIs('dashboard')">
                         {{ __('Admin') }}
                     </x-responsive-nav-link>
                 @elseif(Auth::user()->role === 'farmer')
-                    <x-responsive-nav-link :href="route('farmer.dashboard')" :active="request()->routeIs('farmer.*')">
+                    <x-responsive-nav-link :href="route('dashboard').'#overview'" :active="request()->routeIs('dashboard')">
                         {{ __('Irrigation') }}
                     </x-responsive-nav-link>
                 @elseif(Auth::user()->role === 'provider')
-                    <x-responsive-nav-link :href="route('provider.dashboard')" :active="request()->routeIs('provider.*')">
-                        {{ __('Services') }}
+                    <x-responsive-nav-link :href="route('dashboard').'#available-devices'" :active="false">
+                        {{ __('Devices Available') }}
+                    </x-responsive-nav-link>
+                    <x-responsive-nav-link :href="route('provider.purchases.index')" :active="request()->routeIs('provider.purchases.*')">
+                        {{ __('Purchase Products') }}
+                    </x-responsive-nav-link>
+                    <x-responsive-nav-link :href="route('dashboard').'#services'" :active="false">
+                        {{ __('My Services') }}
                     </x-responsive-nav-link>
                 @elseif(Auth::user()->role === 'manufacturer')
-                    <x-responsive-nav-link :href="route('manufacturer.dashboard')" :active="request()->routeIs('manufacturer.*')">
-                        {{ __('Devices') }}
+                    <x-responsive-nav-link :href="route('dashboard').'#available-services'" :active="false">
+                        {{ __('Available Services') }}
+                    </x-responsive-nav-link>
+                    <x-responsive-nav-link :href="route('dashboard').'#products'" :active="false">
+                        {{ __('My Products') }}
                     </x-responsive-nav-link>
                 @endif
+            @else
+                <x-responsive-nav-link :href="route('about')" :active="request()->routeIs('about')">
+                    {{ __('About Us') }}
+                </x-responsive-nav-link>
+                <x-responsive-nav-link :href="route('contact')" :active="request()->routeIs('contact')">
+                    {{ __('Contact') }}
+                </x-responsive-nav-link>
             @endauth
         </div>
 
@@ -131,10 +143,6 @@
                 </div>
 
                 <div class="mt-3 space-y-1">
-                    <x-responsive-nav-link :href="route('profile.edit')">
-                        {{ __('Profile') }}
-                    </x-responsive-nav-link>
-
                     <form method="POST" action="{{ route('logout') }}">
                         @csrf
                         <x-responsive-nav-link :href="route('logout')" onclick="event.preventDefault(); this.closest('form').submit();">

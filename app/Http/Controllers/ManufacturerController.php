@@ -3,6 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Models\Device;
+use App\Models\Service;
+use App\Models\DevicePurchase;
 use Illuminate\Http\Request;
 
 class ManufacturerController extends Controller
@@ -10,8 +12,14 @@ class ManufacturerController extends Controller
     public function index()
     {
         $devices = Device::where('manufacturer_id', auth()->id())->latest()->get();
+        $availableServices = Service::with('provider')->latest()->get();
+        $sales = DevicePurchase::with(['provider', 'device'])
+            ->whereHas('device', fn ($query) => $query->where('manufacturer_id', auth()->id()))
+            ->latest()
+            ->get();
+        $totalEarnings = $sales->sum('total_price');
 
-        return view('manufacturer.dashboard', compact('devices'));
+        return view('manufacturer.dashboard', compact('devices', 'availableServices', 'sales', 'totalEarnings'));
     }
 
     public function store(Request $request)

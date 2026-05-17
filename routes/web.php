@@ -18,15 +18,11 @@ Route::middleware('auth')->group(function (): void {
     Route::get('/dashboard', function () {
         $user = auth()->user();
 
-        if (! $user->is_verified && $user->role !== 'admin') {
-            return redirect()->route('dashboard.pending');
-        }
-
         return match ($user->role) {
-            'admin' => redirect()->route('admin.dashboard'),
-            'farmer' => redirect()->route('farmer.dashboard'),
-            'provider' => redirect()->route('provider.dashboard'),
-            'manufacturer' => redirect()->route('manufacturer.dashboard'),
+            'admin' => app(AdminController::class)->index(),
+            'farmer' => app(FarmerController::class)->index(app(\App\Services\WeatherService::class)),
+            'provider' => app(ProviderController::class)->index(),
+            'manufacturer' => app(ManufacturerController::class)->index(),
             default => view('dashboard'),
         };
     })->name('dashboard');
@@ -47,6 +43,8 @@ Route::middleware('auth')->group(function (): void {
 
     Route::middleware('role:provider')->prefix('provider')->name('provider.')->group(function (): void {
         Route::get('/dashboard', [ProviderController::class, 'index'])->name('dashboard');
+        Route::get('/purchases', [ProviderController::class, 'purchases'])->name('purchases.index');
+        Route::post('/devices/{device}/purchase', [ProviderController::class, 'purchase'])->name('devices.purchase');
         Route::post('/services', [ProviderController::class, 'store'])->name('services.store');
         Route::delete('/services/{service}', [ProviderController::class, 'destroy'])->name('services.destroy');
         Route::patch('/requests/{serviceRequest}', [ProviderController::class, 'updateRequest'])->name('requests.update');
@@ -57,7 +55,6 @@ Route::middleware('auth')->group(function (): void {
         Route::post('/devices', [ManufacturerController::class, 'store'])->name('devices.store');
     });
 
-    Route::view('/pending-verification', 'dashboard.pending')->name('dashboard.pending');
 });
 
 Route::middleware('auth')->group(function (): void {
