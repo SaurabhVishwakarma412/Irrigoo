@@ -1,102 +1,166 @@
 <!DOCTYPE html>
-<html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
+<html lang="{{ str_replace('_', '-', app()->getLocale()) }}" class="scroll-smooth">
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>{{ config('app.name', 'Smart Irrigation') }}</title>
+    <title>Irrigoo - Smart IoT Irrigation</title>
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.bunny.net">
+    <link href="https://fonts.bunny.net/css?family=inter:300,400,500,600,700|outfit:400,600,700,800&display=swap" rel="stylesheet" />
+
+    <!-- Scripts -->
     @vite(['resources/css/app.css', 'resources/js/app.js'])
+    
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        h1, h2, h3, h4, h5, h6, .font-heading { font-family: 'Outfit', sans-serif; }
+    </style>
 </head>
-<body class="bg-slate-950 text-slate-100 antialiased">
-    <div class="min-h-screen overflow-hidden">
-        <header class="relative isolate">
-            <div class="absolute inset-0 -z-10 bg-[radial-gradient(circle_at_top_left,_rgba(16,185,129,0.22),_transparent_32%),radial-gradient(circle_at_80%_20%,_rgba(14,165,233,0.18),_transparent_28%)]"></div>
-            <nav class="mx-auto flex max-w-7xl items-center justify-between px-4 py-6 sm:px-6 lg:px-8">
-                <a href="{{ route('home') }}" class="flex items-center gap-3">
-                    <span class="flex h-11 w-11 items-center justify-center rounded-2xl bg-emerald-400/15 ring-1 ring-emerald-300/30">SI</span>
-                    <span>
-                        <span class="block text-lg font-bold">Smart Irrigation</span>
-                        <span class="block text-xs text-slate-400">IoT farm operations platform</span>
-                    </span>
-                </a>
-                <div class="flex items-center gap-3 text-sm font-semibold">
-                    <a href="{{ route('about') }}" class="hidden text-slate-300 transition hover:text-white sm:block">About</a>
-                    <a href="{{ route('contact') }}" class="hidden text-slate-300 transition hover:text-white sm:block">Contact</a>
+<body class="antialiased bg-gray-900 text-white overflow-x-hidden selection:bg-emerald-500 selection:text-white">
+
+    <!-- Ambient Background -->
+    <div class="fixed inset-0 z-[-1] bg-gray-900">
+        <div class="absolute top-[-20%] left-[-10%] w-[50%] h-[50%] bg-emerald-600/30 blur-[150px] rounded-full animate-pulse" style="animation-duration: 8s;"></div>
+        <div class="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] bg-teal-600/20 blur-[120px] rounded-full animate-pulse" style="animation-duration: 12s;"></div>
+        <div class="absolute top-[40%] right-[20%] w-[30%] h-[30%] bg-blue-600/20 blur-[100px] rounded-full animate-pulse" style="animation-duration: 10s;"></div>
+    </div>
+
+    <!-- Navigation -->
+    <nav class="fixed w-full z-50 transition-all duration-300 bg-gray-900/60 backdrop-blur-lg border-b border-white/10" id="navbar">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-20">
+                <div class="flex-shrink-0 flex items-center gap-3">
+                    <div class="relative">
+                        <div class="absolute -inset-1 bg-gradient-to-r from-emerald-400 to-teal-400 rounded-full blur opacity-75"></div>
+                        <svg class="relative w-10 h-10 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 15a4 4 0 004 4h9a5 5 0 10-.1-9.999 5.002 5.002 0 10-9.78 2.096A4.001 4.001 0 003 15z"></path>
+                        </svg>
+                    </div>
+                    <span class="font-heading font-bold text-2xl tracking-tight text-transparent bg-clip-text bg-gradient-to-r from-emerald-300 to-teal-200">Irrigoo</span>
+                </div>
+                
+                <div class="hidden md:flex items-center space-x-8">
+                    <a href="/" class="text-emerald-400 font-medium transition-colors">Home</a>
+                    <a href="/about" class="text-gray-300 hover:text-white transition-colors">About</a>
+                    <a href="/contact" class="text-gray-300 hover:text-white transition-colors">Contact</a>
+                </div>
+
+                <div class="flex items-center space-x-4">
                     @auth
-                        <a href="{{ route('dashboard') }}" class="rounded-full bg-white px-4 py-2 text-slate-950">Dashboard</a>
+                        <a href="{{ url('/dashboard') }}" class="font-medium text-white bg-white/10 hover:bg-white/20 px-5 py-2.5 rounded-full transition-all duration-300 backdrop-blur-md border border-white/10 shadow-[0_0_15px_rgba(255,255,255,0.1)]">Dashboard</a>
                     @else
-                        <a href="{{ route('login') }}" class="text-slate-300 transition hover:text-white">Login</a>
-                        <a href="{{ route('register') }}" class="rounded-full bg-emerald-400 px-4 py-2 text-slate-950 transition hover:bg-emerald-300">Register</a>
+                        <a href="{{ route('login') }}" class="text-gray-300 hover:text-white font-medium transition-colors">Log in</a>
+                        @if (Route::has('register'))
+                            <a href="{{ route('register') }}" class="font-medium text-gray-900 bg-gradient-to-r from-emerald-400 to-teal-400 hover:from-emerald-300 hover:to-teal-300 px-6 py-2.5 rounded-full transition-all duration-300 transform hover:scale-105 shadow-[0_0_20px_rgba(52,211,153,0.4)]">Get Started</a>
+                        @endif
                     @endauth
                 </div>
-            </nav>
+            </div>
+        </div>
+    </nav>
 
-            <section class="mx-auto grid max-w-7xl gap-10 px-4 pb-20 pt-8 sm:px-6 lg:grid-cols-[1.02fr_0.98fr] lg:px-8 lg:pb-28 lg:pt-14">
-                <div>
-                    <p class="inline-flex rounded-full border border-emerald-300/20 bg-emerald-300/10 px-4 py-2 text-sm font-semibold text-emerald-200">Farmers · Providers · Manufacturers · Admins</p>
-                    <h1 class="mt-6 max-w-4xl text-4xl font-bold tracking-tight text-white sm:text-6xl">Run irrigation like a living system, not a guessing game.</h1>
-                    <p class="mt-6 max-w-2xl text-lg leading-8 text-slate-300">Monitor water usage, control IoT irrigation devices, discover nearby service providers, and publish irrigation solutions from one verified platform.</p>
-                    <div class="mt-8 flex flex-col gap-3 sm:flex-row">
-                        <a href="{{ route('register') }}" class="rounded-2xl bg-emerald-400 px-6 py-3 text-center font-semibold text-slate-950 transition hover:bg-emerald-300">Create participant account</a>
-                        <a href="{{ route('about') }}" class="rounded-2xl border border-white/15 px-6 py-3 text-center font-semibold text-white transition hover:bg-white/10">See how it works</a>
+    <!-- Hero Section -->
+    <main class="relative pt-32 pb-20 lg:pt-48 lg:pb-32 overflow-hidden">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 text-center">
+            
+            <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 font-medium text-sm mb-8 animate-[fade-in-down_1s_ease-out]">
+                <span class="flex h-2 w-2 relative">
+                  <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                  <span class="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
+                </span>
+                Next-Gen Agriculture is Here
+            </div>
+
+            <h1 class="font-heading text-5xl md:text-7xl lg:text-8xl font-bold tracking-tight mb-8 leading-tight animate-[fade-in-up_1s_ease-out]">
+                Smart Irrigation.<br/>
+                <span class="text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 via-teal-300 to-blue-400">Intelligent Yield.</span>
+            </h1>
+            
+            <p class="max-w-2xl mx-auto text-xl text-gray-300 mb-12 animate-[fade-in-up_1.2s_ease-out]">
+                Connect your farm, manage water usage automatically with IoT devices, and collaborate with top-tier service providersâ€”all from a single, stunning platform.
+            </p>
+
+            <div class="flex flex-col sm:flex-row items-center justify-center gap-4 animate-[fade-in-up_1.4s_ease-out]">
+                <a href="{{ route('register') }}" class="w-full sm:w-auto px-8 py-4 text-lg font-semibold text-gray-900 bg-gradient-to-r from-emerald-400 to-teal-400 rounded-full hover:from-emerald-300 hover:to-teal-300 transform hover:-translate-y-1 hover:shadow-[0_10px_30px_rgba(52,211,153,0.4)] transition-all duration-300">
+                    Join the Platform
+                </a>
+                <a href="#features" class="w-full sm:w-auto px-8 py-4 text-lg font-semibold text-white bg-white/5 border border-white/10 rounded-full hover:bg-white/10 transform hover:-translate-y-1 transition-all duration-300 backdrop-blur-sm">
+                    Discover Features
+                </a>
+            </div>
+            
+            <!-- Dashboard Preview Graphic -->
+            <div class="mt-20 relative mx-auto w-full max-w-5xl perspective-1000 animate-[fade-in-up_1.6s_ease-out]">
+                <div class="absolute -inset-1 bg-gradient-to-b from-emerald-500 to-transparent opacity-20 blur-2xl"></div>
+                <div class="relative bg-gray-900/80 backdrop-blur-xl rounded-2xl border border-white/10 shadow-2xl overflow-hidden transform rotate-x-12 scale-95 transition-transform duration-700 hover:rotate-x-0 hover:scale-100">
+                    <div class="h-8 bg-gray-800/80 border-b border-white/10 flex items-center px-4 gap-2">
+                        <div class="w-3 h-3 rounded-full bg-red-500/80"></div>
+                        <div class="w-3 h-3 rounded-full bg-yellow-500/80"></div>
+                        <div class="w-3 h-3 rounded-full bg-green-500/80"></div>
+                    </div>
+                    <div class="p-6 grid grid-cols-3 gap-6 opacity-80">
+                        <div class="col-span-2 space-y-4">
+                            <div class="h-8 bg-white/5 rounded-lg w-1/3"></div>
+                            <div class="h-48 bg-gradient-to-tr from-emerald-500/20 to-teal-500/5 border border-white/5 rounded-xl"></div>
+                            <div class="grid grid-cols-2 gap-4">
+                                <div class="h-24 bg-white/5 rounded-xl"></div>
+                                <div class="h-24 bg-white/5 rounded-xl"></div>
+                            </div>
+                        </div>
+                        <div class="space-y-4">
+                            <div class="h-32 bg-white/5 rounded-xl"></div>
+                            <div class="h-48 bg-white/5 rounded-xl"></div>
+                        </div>
                     </div>
                 </div>
+            </div>
 
-                <div class="rounded-3xl border border-white/10 bg-white/10 p-5 shadow-2xl shadow-emerald-950/30 backdrop-blur">
-                    <div class="grid gap-4 sm:grid-cols-2">
-                        <div class="rounded-2xl bg-slate-900/80 p-5">
-                            <p class="text-sm text-slate-400">Soil moisture</p>
-                            <p class="mt-4 text-4xl font-bold text-white">42%</p>
-                            <p class="mt-2 text-sm text-emerald-300">Optimal range</p>
-                        </div>
-                        <div class="rounded-2xl bg-slate-900/80 p-5">
-                            <p class="text-sm text-slate-400">Water flow</p>
-                            <p class="mt-4 text-4xl font-bold text-white">3.8 L/min</p>
-                            <p class="mt-2 text-sm text-sky-300">Live device feed</p>
-                        </div>
-                        <div class="rounded-2xl bg-slate-900/80 p-5 sm:col-span-2">
-                            <div class="flex items-center justify-between">
-                                <p class="text-sm text-slate-400">Platform workflow</p>
-                                <span class="rounded-full bg-emerald-400/15 px-3 py-1 text-xs font-semibold text-emerald-200">Verified</span>
-                            </div>
-                            <div class="mt-5 grid gap-3 text-sm sm:grid-cols-3">
-                                <div class="rounded-xl bg-white/5 p-4">1. Register role</div>
-                                <div class="rounded-xl bg-white/5 p-4">2. Admin approves</div>
-                                <div class="rounded-xl bg-white/5 p-4">3. Operate smarter</div>
-                            </div>
-                        </div>
+        </div>
+    </main>
+
+    <!-- Features Section -->
+    <section id="features" class="py-24 bg-gray-900/50 border-t border-white/5">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-20">
+                <h2 class="font-heading text-3xl md:text-5xl font-bold mb-6">A Complete Ecosystem</h2>
+                <p class="text-gray-400 text-lg max-w-2xl mx-auto">Designed for every participant in the modern agricultural cycle.</p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                <!-- Card 1 -->
+                <div class="group bg-white/5 backdrop-blur-sm border border-white/10 rounded-3xl p-8 hover:bg-white/10 transition-all duration-500 hover:-translate-y-2">
+                    <div class="w-14 h-14 bg-emerald-500/20 rounded-2xl flex items-center justify-center mb-6 text-emerald-400 group-hover:scale-110 transition-transform">
+                        <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
                     </div>
+                    <h3 class="text-2xl font-bold mb-4 font-heading text-white">For Farmers</h3>
+                    <p class="text-gray-400 leading-relaxed">
+                        Track precise water usage, toggle IoT devices remotely, and request local maintenance services tailored to your crop type.
+                    </p>
                 </div>
-            </section>
-        </header>
-
-        <main class="bg-slate-50 text-slate-900">
-            <section class="mx-auto max-w-7xl px-4 pt-14 sm:px-6 lg:px-8">
-                <div class="rounded-3xl bg-emerald-950 px-6 py-8 text-white shadow-sm sm:px-8">
-                    <p class="text-sm font-semibold uppercase tracking-wide text-emerald-300">Project statement</p>
-                    <h2 class="mt-3 text-2xl font-bold">IoT-based smart irrigation management platform</h2>
-                    <p class="mt-4 max-w-5xl leading-7 text-emerald-50/90">This platform helps farmers manage irrigation through IoT technology. Farmers, irrigation service providers, and device manufacturers register on the platform, administrators verify participants, manufacturers propose IoT irrigation solutions, and farmers track water usage while finding local services based on location and crop type.</p>
+                <!-- Card 2 -->
+                <div class="group bg-white/5 backdrop-blur-sm border border-white/10 rounded-3xl p-8 hover:bg-white/10 transition-all duration-500 hover:-translate-y-2">
+                    <div class="w-14 h-14 bg-blue-500/20 rounded-2xl flex items-center justify-center mb-6 text-blue-400 group-hover:scale-110 transition-transform">
+                        <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path></svg>
+                    </div>
+                    <h3 class="text-2xl font-bold mb-4 font-heading text-white">For Providers</h3>
+                    <p class="text-gray-400 leading-relaxed">
+                        Offer specialized IoT-based irrigation services, manage incoming requests, and grow your local agricultural service business.
+                    </p>
                 </div>
-            </section>
+                <!-- Card 3 -->
+                <div class="group bg-white/5 backdrop-blur-sm border border-white/10 rounded-3xl p-8 hover:bg-white/10 transition-all duration-500 hover:-translate-y-2">
+                    <div class="w-14 h-14 bg-purple-500/20 rounded-2xl flex items-center justify-center mb-6 text-purple-400 group-hover:scale-110 transition-transform">
+                        <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path></svg>
+                    </div>
+                    <h3 class="text-2xl font-bold mb-4 font-heading text-white">For Manufacturers</h3>
+                    <p class="text-gray-400 leading-relaxed">
+                        Register cutting-edge IoT devices on the platform, track their deployment, and supply the backbone of smart farming.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </section>
 
-            <section class="mx-auto grid max-w-7xl gap-5 px-4 py-14 sm:px-6 md:grid-cols-3 lg:px-8">
-                <article class="rounded-3xl bg-white p-6 shadow-sm ring-1 ring-slate-200">
-                    <p class="text-sm font-semibold text-emerald-700">Farmers</p>
-                    <h2 class="mt-3 text-xl font-bold">Track and control</h2>
-                    <p class="mt-3 text-sm leading-6 text-slate-600">View moisture, temperature, water flow, toggle irrigation, and request nearby services matched to location and crop type.</p>
-                </article>
-                <article class="rounded-3xl bg-white p-6 shadow-sm ring-1 ring-slate-200">
-                    <p class="text-sm font-semibold text-sky-700">Providers</p>
-                    <h2 class="mt-3 text-xl font-bold">Offer local support</h2>
-                    <p class="mt-3 text-sm leading-6 text-slate-600">Publish installation, maintenance, repair, and consultation services, then manage incoming farmer requests.</p>
-                </article>
-                <article class="rounded-3xl bg-white p-6 shadow-sm ring-1 ring-slate-200">
-                    <p class="text-sm font-semibold text-amber-700">Manufacturers</p>
-                    <h2 class="mt-3 text-xl font-bold">Propose IoT solutions</h2>
-                    <p class="mt-3 text-sm leading-6 text-slate-600">Show device capabilities, pricing, connectivity, crops, and features so admins can connect solutions to farms.</p>
-                </article>
-            </section>
-        </main>
-    </div>
 </body>
 </html>
-

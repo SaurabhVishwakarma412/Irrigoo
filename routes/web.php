@@ -1,37 +1,43 @@
 <?php
 
-use App\Http\Controllers\ProfileController;
-use Illuminate\Support\Facades\Route;
-
 use App\Http\Controllers\AdminController;
+use App\Http\Controllers\Api\SensorDataController;
 use App\Http\Controllers\FarmerController;
 use App\Http\Controllers\ManufacturerController;
+use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\ProviderController;
-use App\Http\Controllers\Api\SensorDataController;
+use Illuminate\Support\Facades\Route;
 
-Route::view('/', 'welcome')->name('home');
+Route::get('/', function () {
+    return auth()->check()
+        ? redirect()->route('dashboard')
+        : view('welcome');
+})->name('home');
 
-Route::middleware(['auth', 'verified'])->group(function () {
+Route::middleware('auth')->group(function (): void {
     Route::get('/dashboard', function () {
-        if (!auth()->user()->is_verified && auth()->user()->role !== 'admin') {
-            return view('pending-verification');
+        $user = auth()->user();
+
+        if (! $user->is_verified && $user->role !== 'admin') {
+            return redirect()->route('dashboard.pending');
         }
 
-        $role = auth()->user()->role;
-        if ($role === 'admin') return redirect()->route('admin.dashboard');
-        if ($role === 'farmer') return redirect()->route('farmer.dashboard');
-        if ($role === 'provider') return redirect()->route('provider.dashboard');
-        if ($role === 'manufacturer') return redirect()->route('manufacturer.dashboard');
-        return view('dashboard');
+        return match ($user->role) {
+            'admin' => redirect()->route('admin.dashboard'),
+            'farmer' => redirect()->route('farmer.dashboard'),
+            'provider' => redirect()->route('provider.dashboard'),
+            'manufacturer' => redirect()->route('manufacturer.dashboard'),
+            default => view('dashboard'),
+        };
     })->name('dashboard');
 
-    Route::middleware(['role:admin'])->prefix('admin')->name('admin.')->group(function () {
+    Route::middleware('role:admin')->prefix('admin')->name('admin.')->group(function (): void {
         Route::get('/dashboard', [AdminController::class, 'index'])->name('dashboard');
-        Route::post('/users/{user}/verify', [AdminController::class, 'verifyUser'])->name('users.verify');
         Route::post('/device-assignments', [AdminController::class, 'assignDevice'])->name('device-assignments.store');
+        Route::post('/users/{user}/verify', [AdminController::class, 'verifyUser'])->name('users.verify');
     });
 
-    Route::middleware(['role:farmer'])->prefix('farmer')->name('farmer.')->group(function () {
+    Route::middleware('role:farmer')->prefix('farmer')->name('farmer.')->group(function (): void {
         Route::get('/dashboard', [FarmerController::class, 'index'])->name('dashboard');
         Route::post('/devices/{farmerDevice}/toggle-irrigation', [FarmerController::class, 'toggleIrrigation'])->name('devices.toggle');
         Route::post('/services/{service}/request', [FarmerController::class, 'requestService'])->name('services.request');
@@ -39,19 +45,22 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::post('/api/sensors/{farmerDevice}/simulate', [SensorDataController::class, 'simulate'])->name('api.sensors.simulate');
     });
 
-    Route::middleware(['role:provider'])->prefix('provider')->name('provider.')->group(function () {
+    Route::middleware('role:provider')->prefix('provider')->name('provider.')->group(function (): void {
         Route::get('/dashboard', [ProviderController::class, 'index'])->name('dashboard');
         Route::post('/services', [ProviderController::class, 'store'])->name('services.store');
+        Route::delete('/services/{service}', [ProviderController::class, 'destroy'])->name('services.destroy');
         Route::patch('/requests/{serviceRequest}', [ProviderController::class, 'updateRequest'])->name('requests.update');
     });
 
-    Route::middleware(['role:manufacturer'])->prefix('manufacturer')->name('manufacturer.')->group(function () {
+    Route::middleware('role:manufacturer')->prefix('manufacturer')->name('manufacturer.')->group(function (): void {
         Route::get('/dashboard', [ManufacturerController::class, 'index'])->name('dashboard');
         Route::post('/devices', [ManufacturerController::class, 'store'])->name('devices.store');
     });
+
+    Route::view('/pending-verification', 'dashboard.pending')->name('dashboard.pending');
 });
 
-Route::middleware('auth')->group(function () {
+Route::middleware('auth')->group(function (): void {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
@@ -61,3 +70,5 @@ Route::view('/about', 'about')->name('about');
 Route::view('/contact', 'contact')->name('contact');
 
 require __DIR__.'/auth.php';
+
+

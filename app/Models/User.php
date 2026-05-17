@@ -2,57 +2,70 @@
 
 namespace App\Models;
 
-// use Illuminate\Contracts\Auth\MustVerifyEmail;
-use Database\Factories\UserFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Illuminate\Foundation\Auth\User as Authenticatable;
 
 class User extends Authenticatable
 {
-    /** @use HasFactory<UserFactory> */
     use HasFactory, Notifiable;
 
-    /**
-     * The attributes that are mass assignable.
-     *
-     * @var list<string>
-     */
     protected $fillable = [
         'name',
         'email',
         'password',
         'role',
-        'is_verified',
         'phone',
+        'address',
+        'city',
+        'state',
+        'pincode',
+        'latitude',
+        'longitude',
         'location',
         'crop_type',
         'organization',
-        'address',
+        'farm_size',
+        'is_verified',
+        'verified_by',
+        'verified_at',
     ];
 
-    /**
-     * The attributes that should be hidden for serialization.
-     *
-     * @var list<string>
-     */
     protected $hidden = [
         'password',
         'remember_token',
     ];
 
-    /**
-     * Get the attributes that should be cast.
-     *
-     * @return array<string, string>
-     */
-    protected function casts(): array
+    protected $casts = [
+        'email_verified_at' => 'datetime',
+        'verified_at' => 'datetime',
+        'is_verified' => 'boolean',
+        'password' => 'hashed',
+    ];
+
+    public function hasRole(string $role): bool
     {
-        return [
-            'email_verified_at' => 'datetime',
-            'password' => 'hashed',
-            'is_verified' => 'boolean',
-        ];
+        return $this->role === $role;
+    }
+
+    public function services()
+    {
+        return $this->hasMany(Service::class, 'provider_id');
+    }
+
+    public function farmerProfile()
+    {
+        return $this->hasOne(FarmerProfile::class);
+    }
+
+    public function providerProfile()
+    {
+        return $this->hasOne(ProviderProfile::class);
+    }
+
+    public function manufacturerProfile()
+    {
+        return $this->hasOne(ManufacturerProfile::class);
     }
 
     public function farmerDevices()
@@ -65,13 +78,37 @@ class User extends Authenticatable
         return $this->hasMany(Device::class, 'manufacturer_id');
     }
 
-    public function services()
-    {
-        return $this->hasMany(Service::class, 'provider_id');
-    }
-
     public function serviceRequests()
     {
         return $this->hasMany(ServiceRequest::class, 'farmer_id');
+    }
+
+    public function getPhoneAttribute($value)
+    {
+        return $value
+            ?? $this->farmerProfile?->phone
+            ?? $this->providerProfile?->phone
+            ?? $this->manufacturerProfile?->phone;
+    }
+
+    public function getLocationAttribute($value)
+    {
+        return $value
+            ?? $this->farmerProfile?->location
+            ?? $this->providerProfile?->location
+            ?? $this->manufacturerProfile?->location;
+    }
+
+    public function getCropTypeAttribute($value)
+    {
+        return $value ?? $this->farmerProfile?->crop_type;
+    }
+
+    public function getOrganizationAttribute($value)
+    {
+        return $value
+            ?? $this->providerProfile?->organization
+            ?? $this->manufacturerProfile?->organization
+            ?? $this->farmerProfile?->farm_name;
     }
 }

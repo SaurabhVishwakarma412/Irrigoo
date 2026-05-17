@@ -4,29 +4,27 @@ namespace App\Http\Middleware;
 
 use Closure;
 use Illuminate\Http\Request;
-use Symfony\Component\HttpFoundation\Response;
+use Illuminate\Support\Facades\Auth;
 
 class RoleMiddleware
 {
-    /**
-     * Handle an incoming request.
-     *
-     * @param  Closure(Request): (Response)  $next
-     */
-    public function handle(Request $request, Closure $next, ...$roles): Response
+    public function handle(Request $request, Closure $next, ...$roles)
     {
-        if (!auth()->check()) {
+        if (!Auth::check()) {
             return redirect('login');
         }
 
-        if (!in_array(auth()->user()->role, $roles)) {
-            abort(403, 'Unauthorized action.');
+        $user = Auth::user();
+
+        if (! $user->role || ! in_array($user->role, $roles, true)) {
+            abort(403, 'Unauthorized access.');
         }
 
-        if (!auth()->user()->is_verified && auth()->user()->role !== 'admin') {
-            return response()->view('pending-verification');
+        if ($user->role !== 'admin' && ! $user->is_verified) {
+            return redirect()->route('dashboard.pending');
         }
 
         return $next($request);
     }
 }
+

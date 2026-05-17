@@ -3,46 +3,49 @@
         <div class="flex justify-between h-16">
             <div class="flex">
                 <div class="shrink-0 flex items-center">
-                    <a href="{{ route('home') }}">
-                        <x-application-logo class="block h-9 w-auto fill-current text-gray-800" />
+                    <a href="{{ auth()->check() ? route('dashboard') : route('login') }}" class="flex items-center gap-3">
+                        <x-application-logo />
+                        <span class="text-lg font-bold tracking-wide text-gray-900">Smart Irrigation</span>
                     </a>
                 </div>
 
                 <div class="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex">
-                    <x-nav-link :href="route('home')" :active="request()->routeIs('home')">
-                        {{ __('Home') }}
-                    </x-nav-link>
-                    <x-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard')">
-                        {{ __('Dashboard') }}
-                    </x-nav-link>
+                    @auth
+                        <x-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard')">
+                            {{ __('Dashboard') }}
+                        </x-nav-link>
+                    @endauth
                     <x-nav-link :href="route('about')" :active="request()->routeIs('about')">
                         {{ __('About Us') }}
                     </x-nav-link>
                     <x-nav-link :href="route('contact')" :active="request()->routeIs('contact')">
                         {{ __('Contact') }}
                     </x-nav-link>
-                    @if(Auth::user()->role === 'admin')
-                        <x-nav-link :href="route('admin.dashboard')" :active="request()->routeIs('admin.*')">
-                            {{ __('Verification') }}
-                        </x-nav-link>
-                    @elseif(Auth::user()->role === 'farmer' && Auth::user()->is_verified)
-                        <x-nav-link :href="route('farmer.dashboard')" :active="request()->routeIs('farmer.*')">
-                            {{ __('Irrigation') }}
-                        </x-nav-link>
-                    @elseif(Auth::user()->role === 'provider' && Auth::user()->is_verified)
-                        <x-nav-link :href="route('provider.dashboard')" :active="request()->routeIs('provider.*')">
-                            {{ __('Services') }}
-                        </x-nav-link>
-                    @elseif(Auth::user()->role === 'manufacturer' && Auth::user()->is_verified)
-                        <x-nav-link :href="route('manufacturer.dashboard')" :active="request()->routeIs('manufacturer.*')">
-                            {{ __('Devices') }}
-                        </x-nav-link>
-                    @endif
+                    @auth
+                        @if(Auth::user()->role === 'admin')
+                            <x-nav-link :href="route('admin.dashboard')" :active="request()->routeIs('admin.*')">
+                                {{ __('Admin') }}
+                            </x-nav-link>
+                        @elseif(Auth::user()->role === 'farmer')
+                            <x-nav-link :href="route('farmer.dashboard')" :active="request()->routeIs('farmer.*')">
+                                {{ __('Irrigation') }}
+                            </x-nav-link>
+                        @elseif(Auth::user()->role === 'provider')
+                            <x-nav-link :href="route('provider.dashboard')" :active="request()->routeIs('provider.*')">
+                                {{ __('Services') }}
+                            </x-nav-link>
+                        @elseif(Auth::user()->role === 'manufacturer')
+                            <x-nav-link :href="route('manufacturer.dashboard')" :active="request()->routeIs('manufacturer.*')">
+                                {{ __('Devices') }}
+                            </x-nav-link>
+                        @endif
+                    @endauth
                 </div>
             </div>
 
             <div class="hidden sm:flex sm:items-center sm:ms-6">
-                <x-dropdown align="right" width="48">
+                @auth
+                    <x-dropdown align="right" width="48">
                     <x-slot name="trigger">
                         <button class="inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md text-gray-500 bg-white hover:text-gray-700 focus:outline-none">
                             <div>{{ Auth::user()->name }}</div>
@@ -66,7 +69,13 @@
                             </x-dropdown-link>
                         </form>
                     </x-slot>
-                </x-dropdown>
+                    </x-dropdown>
+                @else
+                    <div class="flex items-center gap-4">
+                        <a href="{{ route('login') }}" class="text-sm font-medium text-gray-600 hover:text-gray-900">Login</a>
+                        <a href="{{ route('register') }}" class="rounded-md bg-emerald-600 px-3 py-2 text-sm font-semibold text-white hover:bg-emerald-700">Register</a>
+                    </div>
+                @endauth
             </div>
 
             <div class="-me-2 flex items-center sm:hidden">
@@ -82,55 +91,67 @@
 
     <div :class="{'block': open, 'hidden': ! open}" class="hidden sm:hidden">
         <div class="pt-2 pb-3 space-y-1">
-            <x-responsive-nav-link :href="route('home')" :active="request()->routeIs('home')">
-                {{ __('Home') }}
-            </x-responsive-nav-link>
-            <x-responsive-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard')">
-                {{ __('Dashboard') }}
-            </x-responsive-nav-link>
+            @auth
+                <x-responsive-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard')">
+                    {{ __('Dashboard') }}
+                </x-responsive-nav-link>
+            @endauth
             <x-responsive-nav-link :href="route('about')" :active="request()->routeIs('about')">
                 {{ __('About Us') }}
             </x-responsive-nav-link>
             <x-responsive-nav-link :href="route('contact')" :active="request()->routeIs('contact')">
                 {{ __('Contact') }}
             </x-responsive-nav-link>
-            @if(Auth::user()->role === 'admin')
-                <x-responsive-nav-link :href="route('admin.dashboard')" :active="request()->routeIs('admin.*')">
-                    {{ __('Verification') }}
-                </x-responsive-nav-link>
-            @elseif(Auth::user()->role === 'farmer' && Auth::user()->is_verified)
-                <x-responsive-nav-link :href="route('farmer.dashboard')" :active="request()->routeIs('farmer.*')">
-                    {{ __('Irrigation') }}
-                </x-responsive-nav-link>
-            @elseif(Auth::user()->role === 'provider' && Auth::user()->is_verified)
-                <x-responsive-nav-link :href="route('provider.dashboard')" :active="request()->routeIs('provider.*')">
-                    {{ __('Services') }}
-                </x-responsive-nav-link>
-            @elseif(Auth::user()->role === 'manufacturer' && Auth::user()->is_verified)
-                <x-responsive-nav-link :href="route('manufacturer.dashboard')" :active="request()->routeIs('manufacturer.*')">
-                    {{ __('Devices') }}
-                </x-responsive-nav-link>
-            @endif
+            @auth
+                @if(Auth::user()->role === 'admin')
+                    <x-responsive-nav-link :href="route('admin.dashboard')" :active="request()->routeIs('admin.*')">
+                        {{ __('Admin') }}
+                    </x-responsive-nav-link>
+                @elseif(Auth::user()->role === 'farmer')
+                    <x-responsive-nav-link :href="route('farmer.dashboard')" :active="request()->routeIs('farmer.*')">
+                        {{ __('Irrigation') }}
+                    </x-responsive-nav-link>
+                @elseif(Auth::user()->role === 'provider')
+                    <x-responsive-nav-link :href="route('provider.dashboard')" :active="request()->routeIs('provider.*')">
+                        {{ __('Services') }}
+                    </x-responsive-nav-link>
+                @elseif(Auth::user()->role === 'manufacturer')
+                    <x-responsive-nav-link :href="route('manufacturer.dashboard')" :active="request()->routeIs('manufacturer.*')">
+                        {{ __('Devices') }}
+                    </x-responsive-nav-link>
+                @endif
+            @endauth
         </div>
 
         <div class="pt-4 pb-1 border-t border-gray-200">
-            <div class="px-4">
-                <div class="font-medium text-base text-gray-800">{{ Auth::user()->name }}</div>
-                <div class="font-medium text-sm text-gray-500">{{ Auth::user()->email }}</div>
-            </div>
+            @auth
+                <div class="px-4">
+                    <div class="font-medium text-base text-gray-800">{{ Auth::user()->name }}</div>
+                    <div class="font-medium text-sm text-gray-500">{{ Auth::user()->email }}</div>
+                </div>
 
-            <div class="mt-3 space-y-1">
-                <x-responsive-nav-link :href="route('profile.edit')">
-                    {{ __('Profile') }}
-                </x-responsive-nav-link>
-
-                <form method="POST" action="{{ route('logout') }}">
-                    @csrf
-                    <x-responsive-nav-link :href="route('logout')" onclick="event.preventDefault(); this.closest('form').submit();">
-                        {{ __('Log Out') }}
+                <div class="mt-3 space-y-1">
+                    <x-responsive-nav-link :href="route('profile.edit')">
+                        {{ __('Profile') }}
                     </x-responsive-nav-link>
-                </form>
-            </div>
+
+                    <form method="POST" action="{{ route('logout') }}">
+                        @csrf
+                        <x-responsive-nav-link :href="route('logout')" onclick="event.preventDefault(); this.closest('form').submit();">
+                            {{ __('Log Out') }}
+                        </x-responsive-nav-link>
+                    </form>
+                </div>
+            @else
+                <div class="space-y-1 px-4">
+                    <x-responsive-nav-link :href="route('login')">
+                        {{ __('Login') }}
+                    </x-responsive-nav-link>
+                    <x-responsive-nav-link :href="route('register')">
+                        {{ __('Register') }}
+                    </x-responsive-nav-link>
+                </div>
+            @endauth
         </div>
     </div>
 </nav>

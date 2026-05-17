@@ -1,301 +1,258 @@
-<x-app-layout>
-    <x-slot name="header">
-        <div>
-            <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-                {{ __('Farmer Irrigation Dashboard') }}
-            </h2>
-            <p class="text-sm text-gray-500">Track devices, water usage, crop conditions, and local service options.</p>
-        </div>
-    </x-slot>
+@extends('layouts.app')
 
-    <div class="py-10" x-data="irrigationDashboard()">
-        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
-            @if(session('success'))
-                <div class="mb-6 bg-green-100 border border-green-300 text-green-800 px-4 py-3 rounded-md">
-                    {{ session('success') }}
-                </div>
-            @endif
-
-            <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
-                <div class="bg-white rounded-lg shadow-sm p-5 border-l-4 border-emerald-500">
-                    <div class="text-xs uppercase font-semibold text-gray-500">Connected Devices</div>
-                    <div class="mt-2 text-3xl font-bold text-gray-900">{{ $farmerDevices->count() }}</div>
-                </div>
-                <div class="bg-white rounded-lg shadow-sm p-5 border-l-4 border-blue-500">
-                    <div class="text-xs uppercase font-semibold text-gray-500">Water Usage</div>
-                    <div class="mt-2 text-3xl font-bold text-gray-900">{{ number_format($waterUsage, 1) }} L/min</div>
-                </div>
-                <div class="bg-white rounded-lg shadow-sm p-5 border-l-4 border-amber-500">
-                    <div class="text-xs uppercase font-semibold text-gray-500">Crop Type</div>
-                    <div class="mt-2 text-xl font-bold text-gray-900">{{ auth()->user()->crop_type ?? 'Not set' }}</div>
-                </div>
-                <div class="bg-white rounded-lg shadow-sm p-5 border-l-4 border-cyan-500">
-                    <div class="text-xs uppercase font-semibold text-gray-500">Location</div>
-                    <div class="mt-2 text-xl font-bold text-gray-900">{{ auth()->user()->location ?? 'Not set' }}</div>
-                </div>
+@section('content')
+<div class="py-12 bg-gray-50 min-h-screen">
+    <div class="max-w-7xl mx-auto sm:px-6 lg:px-8 space-y-8">
+        
+        <!-- Header & Stats -->
+        <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+            <div>
+                <h2 class="text-3xl font-bold text-gray-900 tracking-tight">Farmer Dashboard</h2>
+                <p class="text-gray-500 mt-1">Manage your devices, track usage, and discover services.</p>
             </div>
-
-            <div class="mb-6 overflow-hidden rounded-2xl bg-slate-900 text-white shadow-sm">
-                <div class="grid gap-6 p-6 lg:grid-cols-[0.9fr_1.1fr] lg:items-center">
+            
+            @if($weather)
+                <div class="bg-white rounded-2xl p-4 shadow-sm border border-gray-100 flex items-center gap-4">
+                    <div class="p-3 bg-blue-50 rounded-xl">
+                        <svg class="w-6 h-6 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 15a4 4 0 004 4h9a5 5 0 10-.1-9.999 5.002 5.002 0 10-9.78 2.096A4.001 4.001 0 003 15z"></path>
+                        </svg>
+                    </div>
                     <div>
-                        <p class="text-sm font-semibold uppercase tracking-wide text-emerald-300">Live Weather API</p>
-                        @if($weather)
-                            <h3 class="mt-2 text-2xl font-bold">{{ $weather['place']['name'] }}, {{ $weather['place']['country'] ?? '' }}</h3>
-                            <p class="mt-3 text-sm leading-6 text-slate-300">{{ $irrigationAdvice }}</p>
-                        @else
-                            <h3 class="mt-2 text-2xl font-bold">Weather unavailable</h3>
-                            <p class="mt-3 text-sm leading-6 text-slate-300">Add a valid location to your profile to show live local irrigation context.</p>
-                        @endif
+                        <p class="text-sm font-medium text-gray-500">Current Weather</p>
+                        <p class="text-lg font-bold text-gray-900">{{ $weather['temperature'] ?? '--' }}Â°C, {{ $weather['condition'] ?? 'Unknown' }}</p>
                     </div>
+                </div>
+            @endif
+        </div>
 
-                    @if($weather)
-                        <div class="grid gap-3 sm:grid-cols-4">
-                            <div class="rounded-2xl bg-white/10 p-4">
-                                <p class="text-xs uppercase text-slate-300">Temperature</p>
-                                <p class="mt-2 text-2xl font-bold">{{ $weather['current']['temperature_2m'] ?? '--' }}°C</p>
-                            </div>
-                            <div class="rounded-2xl bg-white/10 p-4">
-                                <p class="text-xs uppercase text-slate-300">Rain today</p>
-                                <p class="mt-2 text-2xl font-bold">{{ $weather['daily']['precipitation_sum'][0] ?? '--' }} mm</p>
-                            </div>
-                            <div class="rounded-2xl bg-white/10 p-4">
-                                <p class="text-xs uppercase text-slate-300">Rain chance</p>
-                                <p class="mt-2 text-2xl font-bold">{{ $weather['daily']['precipitation_probability_max'][0] ?? '--' }}%</p>
-                            </div>
-                            <div class="rounded-2xl bg-white/10 p-4">
-                                <p class="text-xs uppercase text-slate-300">Surface soil</p>
-                                <p class="mt-2 text-2xl font-bold">{{ isset($weather['current']['soil_moisture_0_to_1cm']) ? number_format($weather['current']['soil_moisture_0_to_1cm'], 2) : '--' }}</p>
-                            </div>
-                        </div>
-                    @endif
+        @if($irrigationAdvice)
+            <div class="bg-gradient-to-r from-emerald-500 to-teal-500 rounded-2xl p-6 text-white shadow-lg shadow-emerald-500/20 flex items-start gap-4">
+                <div class="p-2 bg-white/20 rounded-lg backdrop-blur-sm">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                </div>
+                <div>
+                    <h3 class="font-bold text-lg">Irrigation Advice</h3>
+                    <p class="text-emerald-50 mt-1">{{ $irrigationAdvice }}</p>
+                </div>
+            </div>
+        @endif
+
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <!-- Stat Card 1 -->
+            <div class="bg-white rounded-3xl p-6 shadow-sm border border-gray-100 transform transition-all hover:-translate-y-1 hover:shadow-md">
+                <div class="flex items-center justify-between mb-4">
+                    <h3 class="text-gray-500 font-medium">Total Water Usage</h3>
+                    <div class="w-10 h-10 rounded-full bg-blue-50 flex items-center justify-center text-blue-600">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z"></path></svg>
+                    </div>
+                </div>
+                <div class="text-3xl font-bold text-gray-900">{{ number_format($waterUsage, 2) }} L</div>
+                <div class="mt-2 text-sm text-green-600 flex items-center gap-1">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"></path></svg>
+                    <span>All-time total</span>
                 </div>
             </div>
 
-            @if($farmerDevices->isEmpty())
-                <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg p-6 mb-6">
-                    <h3 class="font-semibold text-gray-900">No IoT devices connected yet</h3>
-                    <p class="mt-1 text-sm text-gray-500">After an administrator or manufacturer assigns a device, real-time irrigation controls will appear here.</p>
+            <!-- Stat Card 2 -->
+            <div class="bg-white rounded-3xl p-6 shadow-sm border border-gray-100 transform transition-all hover:-translate-y-1 hover:shadow-md">
+                <div class="flex items-center justify-between mb-4">
+                    <h3 class="text-gray-500 font-medium">Active Devices</h3>
+                    <div class="w-10 h-10 rounded-full bg-emerald-50 flex items-center justify-center text-emerald-600">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 3v2m6-2v2M9 19v2m6-2v2M5 9H3m2 6H3m18-6h-2m2 6h-2M7 19h10a2 2 0 002-2V7a2 2 0 00-2-2H7a2 2 0 00-2 2v10a2 2 0 002 2zM9 9h6v6H9V9z"></path></svg>
+                    </div>
                 </div>
-            @else
-                @foreach($farmerDevices as $fd)
-                    <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg p-6 mb-6">
-                        <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4 border-b pb-4 mb-6">
+                <div class="text-3xl font-bold text-gray-900">{{ $farmerDevices->count() }}</div>
+                <div class="mt-2 text-sm text-gray-500">Connected to your farm</div>
+            </div>
+
+            <!-- Stat Card 3 -->
+            <div class="bg-white rounded-3xl p-6 shadow-sm border border-gray-100 transform transition-all hover:-translate-y-1 hover:shadow-md">
+                <div class="flex items-center justify-between mb-4">
+                    <h3 class="text-gray-500 font-medium">Pending Service Requests</h3>
+                    <div class="w-10 h-10 rounded-full bg-orange-50 flex items-center justify-center text-orange-600">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                    </div>
+                </div>
+                <div class="text-3xl font-bold text-gray-900">{{ $serviceRequests->where('status', 'pending')->count() }}</div>
+                <div class="mt-2 text-sm text-gray-500">Awaiting provider response</div>
+            </div>
+        </div>
+
+        <!-- Devices Section -->
+        <div class="bg-white rounded-3xl shadow-sm border border-gray-100 overflow-hidden">
+            <div class="p-6 border-b border-gray-100 flex justify-between items-center bg-gray-50/50">
+                <h3 class="text-xl font-bold text-gray-900">Your Smart Devices</h3>
+                <span class="px-3 py-1 bg-gray-100 text-gray-600 text-xs rounded-full font-medium">{{ $farmerDevices->count() }} Devices</span>
+            </div>
+            <div class="p-6 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                @forelse($farmerDevices as $fd)
+                    <div class="border border-gray-200 rounded-2xl p-5 hover:border-emerald-300 transition-colors bg-white relative" x-data="{ 
+                        isOn: {{ $fd->irrigation_on ? 'true' : 'false' }},
+                        loading: false,
+                        toggle() {
+                            this.loading = true;
+                            fetch('{{ route('farmer.devices.toggle', $fd) }}', {
+                                method: 'POST',
+                                headers: {
+                                    'Content-Type': 'application/json',
+                                    'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                                }
+                            })
+                            .then(res => res.json())
+                            .then(data => {
+                                this.isOn = data.irrigation_on;
+                                this.loading = false;
+                            });
+                        }
+                    }">
+                        <div class="flex justify-between items-start mb-4">
                             <div>
-                                <h3 class="text-2xl font-bold text-gray-900">{{ $fd->device->name }}</h3>
-                                <p class="text-sm text-gray-500">
-                                    {{ $fd->device->connectivity ?? 'IoT' }} device by {{ $fd->device->manufacturer->organization ?? $fd->device->manufacturer->name ?? 'Manufacturer' }}
-                                </p>
-                                <p class="text-sm mt-1">
-                                    Status:
-                                    <span class="capitalize font-semibold {{ $fd->status === 'active' ? 'text-green-600' : 'text-gray-600' }}">{{ $fd->status }}</span>
-                                </p>
+                                <h4 class="font-bold text-gray-900">{{ $fd->device->name }}</h4>
+                                <p class="text-xs text-gray-500">ID: {{ $fd->device->serial_number }}</p>
                             </div>
-                            <div class="flex flex-wrap items-center gap-3">
-                                <button @click="simulateData({{ $fd->id }})" class="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-md text-sm font-semibold">
-                                    Simulate IoT Reading
-                                </button>
-                                <button @click="toggleIrrigation({{ $fd->id }})"
-                                        :class="irrigationStatus[{{ $fd->id }}] ? 'bg-red-600 hover:bg-red-700' : 'bg-green-600 hover:bg-green-700'"
-                                        class="text-white px-4 py-2 rounded-md text-sm font-semibold">
-                                    <span x-text="irrigationStatus[{{ $fd->id }}] ? 'Turn Off Irrigation' : 'Turn On Irrigation'"></span>
-                                </button>
+                            <!-- Status Indicator -->
+                            <div class="flex items-center gap-1.5" :class="isOn ? 'text-emerald-500' : 'text-gray-400'">
+                                <span class="relative flex h-2.5 w-2.5">
+                                  <span x-show="isOn" class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                                  <span class="relative inline-flex rounded-full h-2.5 w-2.5" :class="isOn ? 'bg-emerald-500' : 'bg-gray-400'"></span>
+                                </span>
+                                <span class="text-xs font-medium uppercase tracking-wider" x-text="isOn ? 'Active' : 'Offline'"></span>
                             </div>
                         </div>
 
-                        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
-                            <div class="bg-blue-50 rounded-lg p-5 border border-blue-100">
-                                <p class="text-blue-700 text-xs font-semibold uppercase">Soil Moisture</p>
-                                <p class="mt-2 text-3xl font-bold text-blue-950"><span x-text="latestData[{{ $fd->id }}]?.moisture_level ?? '--'"></span>%</p>
-                                <p class="mt-2 text-sm font-semibold" :class="getMoistureColor(latestData[{{ $fd->id }}]?.moisture_level)" x-text="getMoistureLabel(latestData[{{ $fd->id }}]?.moisture_level)"></p>
+                        <div class="bg-gray-50 rounded-xl p-3 mb-4 text-sm text-gray-600 grid grid-cols-2 gap-2">
+                            <div>
+                                <span class="block text-xs text-gray-400">Last Flow Rate</span>
+                                <span class="font-medium text-gray-900">{{ $fd->sensorData->first()?->water_flow ?? 0 }} L/min</span>
                             </div>
-                            <div class="bg-orange-50 rounded-lg p-5 border border-orange-100">
-                                <p class="text-orange-700 text-xs font-semibold uppercase">Temperature</p>
-                                <p class="mt-2 text-3xl font-bold text-orange-950"><span x-text="latestData[{{ $fd->id }}]?.temperature ?? '--'"></span> C</p>
-                                <p class="mt-2 text-sm text-gray-600">Sensor field temperature</p>
-                            </div>
-                            <div class="bg-teal-50 rounded-lg p-5 border border-teal-100">
-                                <p class="text-teal-700 text-xs font-semibold uppercase">Water Flow</p>
-                                <p class="mt-2 text-3xl font-bold text-teal-950"><span x-text="latestData[{{ $fd->id }}]?.water_flow ?? '--'"></span> L/min</p>
-                                <p class="mt-2 text-sm text-gray-600">Current irrigation flow</p>
+                            <div>
+                                <span class="block text-xs text-gray-400">Soil Moisture</span>
+                                <span class="font-medium text-gray-900">{{ $fd->sensorData->first()?->soil_moisture ?? 0 }}%</span>
                             </div>
                         </div>
 
-                        <div class="border rounded-lg p-4 bg-gray-50">
-                            <canvas id="chart-{{ $fd->id }}" height="100"></canvas>
-                        </div>
+                        <!-- Toggle Button -->
+                        <button @click="toggle()" :disabled="loading" 
+                            class="w-full py-2.5 rounded-xl font-medium transition-all duration-200 flex justify-center items-center gap-2"
+                            :class="isOn ? 'bg-red-50 text-red-600 hover:bg-red-100' : 'bg-emerald-50 text-emerald-600 hover:bg-emerald-100'">
+                            <svg x-show="loading" class="animate-spin h-4 w-4" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
+                            <svg x-show="!loading && !isOn" class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                            <svg x-show="!loading && isOn" class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 10a1 1 0 011-1h4a1 1 0 011 1v4a1 1 0 01-1 1h-4a1 1 0 01-1-1v-4z"></path></svg>
+                            <span x-text="isOn ? 'Stop Irrigation' : 'Start Irrigation'"></span>
+                        </button>
                     </div>
-                @endforeach
-            @endif
-
-            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                <div class="lg:col-span-2 bg-white overflow-hidden shadow-sm sm:rounded-lg">
-                    <div class="p-6">
-                        <h3 class="text-lg font-bold text-gray-900">Local Irrigation Services</h3>
-                        <p class="text-sm text-gray-500 mb-4">Matched by your location and crop type where possible.</p>
-
-                        <div class="space-y-4">
-                            @forelse($services as $service)
-                                <div class="border border-gray-200 rounded-lg p-4">
-                                    <div class="flex flex-col md:flex-row md:items-start md:justify-between gap-4">
-                                        <div>
-                                            <h4 class="font-semibold text-gray-900">{{ $service->name }}</h4>
-                                            <p class="mt-1 text-sm text-gray-600">{{ $service->description }}</p>
-                                            <div class="mt-2 text-xs text-gray-500">
-                                                {{ ucfirst($service->type) }} | {{ $service->service_area ?? $service->provider->location }} | Crops: {{ $service->crop_types ?? 'All crops' }}
-                                            </div>
-                                            <div class="mt-1 text-xs text-gray-500">Provider: {{ $service->provider->organization ?? $service->provider->name }}</div>
-                                        </div>
-                                        <form method="POST" action="{{ route('farmer.services.request', $service) }}" class="flex flex-col gap-2 min-w-48">
-                                            @csrf
-                                            <input type="datetime-local" name="scheduled_date" class="text-sm border-gray-300 rounded-md">
-                                            <button class="bg-blue-600 hover:bg-blue-700 text-white text-sm px-4 py-2 rounded-md font-semibold" type="submit">
-                                                Request Service
-                                            </button>
-                                        </form>
-                                    </div>
-                                </div>
-                            @empty
-                                <p class="text-sm text-gray-500">No matching service providers are available yet.</p>
-                            @endforelse
+                @empty
+                    <div class="col-span-full py-8 text-center text-gray-500">
+                        <div class="bg-gray-100 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-3">
+                            <svg class="w-8 h-8 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
                         </div>
+                        <p>No devices assigned yet. Contact an admin to assign devices to your farm.</p>
                     </div>
+                @endforelse
+            </div>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+            <!-- Local Services -->
+            <div class="bg-white rounded-3xl shadow-sm border border-gray-100 overflow-hidden">
+                <div class="p-6 border-b border-gray-100 bg-gray-50/50">
+                    <h3 class="text-xl font-bold text-gray-900">Local Providers for Your Crop</h3>
+                    <p class="text-sm text-gray-500 mt-1">Recommended services near {{ auth()->user()->location }}</p>
                 </div>
-
-                <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
-                    <div class="p-6">
-                        <h3 class="text-lg font-bold text-gray-900">Recent Requests</h3>
-                        <div class="mt-4 space-y-3">
-                            @forelse($serviceRequests as $request)
-                                <div class="border border-gray-200 rounded-lg p-3">
-                                    <div class="font-semibold text-sm text-gray-900">{{ $request->service->name }}</div>
-                                    <div class="text-xs text-gray-500">{{ $request->service->provider->organization ?? $request->service->provider->name }}</div>
-                                    <div class="mt-2">
-                                        <span class="px-2 py-1 rounded-full text-xs font-semibold bg-gray-100 text-gray-700 capitalize">{{ $request->status }}</span>
+                <div class="p-0">
+                    @forelse($services as $service)
+                        <div class="p-6 border-b border-gray-100 last:border-0 hover:bg-gray-50 transition-colors">
+                            <div class="flex justify-between items-start gap-4">
+                                <div>
+                                    <h4 class="font-bold text-gray-900 text-lg">{{ $service->name }}</h4>
+                                    <p class="text-sm text-emerald-600 font-medium">{{ $service->provider->organization ?? $service->provider->name }}</p>
+                                    <p class="text-gray-600 mt-2 text-sm line-clamp-2">{{ $service->description }}</p>
+                                    
+                                    <div class="mt-3 flex items-center gap-4 text-xs font-medium text-gray-500">
+                                        <div class="flex items-center gap-1 bg-gray-100 px-2 py-1 rounded-md">
+                                            <svg class="w-3.5 h-3.5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                                            ${{ number_format($service->price, 2) }}
+                                        </div>
+                                        <div class="flex items-center gap-1">
+                                            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
+                                            {{ $service->provider->providerProfile?->service_area ?? 'Local' }}
+                                        </div>
                                     </div>
                                 </div>
-                            @empty
-                                <p class="text-sm text-gray-500">No service requests yet.</p>
-                            @endforelse
+                                <div class="shrink-0" x-data="{ open: false }">
+                                    <button @click="open = true" class="px-4 py-2 bg-emerald-50 text-emerald-600 hover:bg-emerald-100 rounded-lg font-medium text-sm transition-colors">
+                                        Request
+                                    </button>
+                                    
+                                    <!-- Request Modal -->
+                                    <div x-show="open" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-gray-900/50 backdrop-blur-sm" style="display: none;">
+                                        <div @click.away="open = false" class="bg-white rounded-2xl shadow-xl w-full max-w-md overflow-hidden transform transition-all">
+                                            <div class="p-6 border-b border-gray-100">
+                                                <h3 class="text-lg font-bold text-gray-900">Request Service</h3>
+                                                <p class="text-sm text-gray-500 mt-1">{{ $service->name }}</p>
+                                            </div>
+                                            <form action="{{ route('farmer.services.request', $service) }}" method="POST" class="p-6">
+                                                @csrf
+                                                <div class="mb-4">
+                                                    <label class="block text-sm font-medium text-gray-700 mb-1">Preferred Date</label>
+                                                    <input type="date" name="scheduled_date" class="w-full border-gray-300 rounded-lg focus:ring-emerald-500 focus:border-emerald-500 shadow-sm" required>
+                                                </div>
+                                                <div class="flex justify-end gap-3 mt-6">
+                                                    <button type="button" @click="open = false" class="px-4 py-2 text-gray-500 hover:text-gray-700 font-medium">Cancel</button>
+                                                    <button type="submit" class="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg font-medium shadow-sm">Submit Request</button>
+                                                </div>
+                                            </form>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
-                    </div>
+                    @empty
+                        <div class="p-8 text-center text-gray-500">
+                            No local services found for your crop type yet.
+                        </div>
+                    @endforelse
+                </div>
+            </div>
+
+            <!-- Recent Requests -->
+            <div class="bg-white rounded-3xl shadow-sm border border-gray-100 overflow-hidden">
+                <div class="p-6 border-b border-gray-100 bg-gray-50/50">
+                    <h3 class="text-xl font-bold text-gray-900">Your Service Requests</h3>
+                </div>
+                <div class="p-0">
+                    @forelse($serviceRequests as $req)
+                        <div class="p-5 border-b border-gray-50 flex justify-between items-center">
+                            <div>
+                                <h4 class="font-bold text-gray-900">{{ $req->service->name }}</h4>
+                                <p class="text-xs text-gray-500 mt-1">Provider: {{ $req->service->provider->name }}</p>
+                                <p class="text-xs text-gray-400 mt-0.5">Scheduled: {{ $req->scheduled_date ? \Carbon\Carbon::parse($req->scheduled_date)->format('M d, Y') : 'N/A' }}</p>
+                            </div>
+                            <div>
+                                @php
+                                    $statusColors = [
+                                        'pending' => 'bg-yellow-100 text-yellow-700',
+                                        'accepted' => 'bg-blue-100 text-blue-700',
+                                        'completed' => 'bg-green-100 text-green-700',
+                                        'rejected' => 'bg-red-100 text-red-700',
+                                    ];
+                                    $color = $statusColors[$req->status] ?? 'bg-gray-100 text-gray-700';
+                                @endphp
+                                <span class="px-3 py-1 rounded-full text-xs font-semibold capitalize {{ $color }}">
+                                    {{ $req->status }}
+                                </span>
+                            </div>
+                        </div>
+                    @empty
+                        <div class="p-8 text-center text-gray-500">
+                            You haven't requested any services yet.
+                        </div>
+                    @endforelse
                 </div>
             </div>
         </div>
+
     </div>
-
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <script>
-        window.axios.defaults.headers.common['X-CSRF-TOKEN'] = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
-
-        document.addEventListener('alpine:init', () => {
-            Alpine.data('irrigationDashboard', () => ({
-                irrigationStatus: {
-                    @foreach($farmerDevices as $fd)
-                        {{ $fd->id }}: {{ $fd->irrigation_on ? 'true' : 'false' }},
-                    @endforeach
-                },
-                latestData: {
-                    @foreach($farmerDevices as $fd)
-                        {{ $fd->id }}: @json($fd->sensorData->first()),
-                    @endforeach
-                },
-                charts: {},
-
-                init() {
-                    @foreach($farmerDevices as $fd)
-                        this.initChart({{ $fd->id }});
-                    @endforeach
-                },
-
-                initChart(deviceId) {
-                    axios.get(`/farmer/api/sensors/${deviceId}`).then((response) => {
-                        const data = response.data.reverse();
-                        const canvas = document.getElementById(`chart-${deviceId}`);
-
-                        if (!canvas || typeof Chart === 'undefined') {
-                            return;
-                        }
-
-                        this.charts[deviceId] = new Chart(canvas.getContext('2d'), {
-                            type: 'line',
-                            data: {
-                                labels: data.map((item) => new Date(item.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })),
-                                datasets: [{
-                                    label: 'Moisture (%)',
-                                    data: data.map((item) => item.moisture_level),
-                                    borderColor: 'rgb(37, 99, 235)',
-                                    backgroundColor: 'rgba(37, 99, 235, 0.12)',
-                                    tension: 0.35,
-                                    fill: true
-                                }, {
-                                    label: 'Temperature (C)',
-                                    data: data.map((item) => item.temperature),
-                                    borderColor: 'rgb(234, 88, 12)',
-                                    tension: 0.35
-                                }, {
-                                    label: 'Water Flow (L/min)',
-                                    data: data.map((item) => item.water_flow),
-                                    borderColor: 'rgb(13, 148, 136)',
-                                    tension: 0.35
-                                }]
-                            },
-                            options: {
-                                responsive: true,
-                                scales: { y: { beginAtZero: true } }
-                            }
-                        });
-                    });
-                },
-
-                updateChart(deviceId, newData) {
-                    const chart = this.charts[deviceId];
-
-                    if (!chart) {
-                        return;
-                    }
-
-                    chart.data.labels.push(new Date(newData.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }));
-                    chart.data.datasets[0].data.push(newData.moisture_level);
-                    chart.data.datasets[1].data.push(newData.temperature);
-                    chart.data.datasets[2].data.push(newData.water_flow);
-
-                    if (chart.data.labels.length > 24) {
-                        chart.data.labels.shift();
-                        chart.data.datasets.forEach((dataset) => dataset.data.shift());
-                    }
-
-                    chart.update();
-                },
-
-                toggleIrrigation(deviceId) {
-                    axios.post(`/farmer/devices/${deviceId}/toggle-irrigation`).then((response) => {
-                        this.irrigationStatus[deviceId] = response.data.irrigation_on;
-                    });
-                },
-
-                simulateData(deviceId) {
-                    axios.post(`/farmer/api/sensors/${deviceId}/simulate`).then((response) => {
-                        this.latestData[deviceId] = response.data.data;
-                        this.irrigationStatus[deviceId] = response.data.irrigation_on;
-                        this.updateChart(deviceId, response.data.data);
-                    });
-                },
-
-                getMoistureLabel(level) {
-                    if (level === null || level === undefined) return 'Waiting for sensor data';
-                    if (level < 30) return 'Dry soil - irrigation recommended';
-                    if (level > 70) return 'High moisture - irrigation can pause';
-                    return 'Moisture is optimal';
-                },
-
-                getMoistureColor(level) {
-                    if (level === null || level === undefined) return 'text-gray-500';
-                    if (level < 30) return 'text-red-600';
-                    if (level > 70) return 'text-blue-600';
-                    return 'text-green-600';
-                }
-            }));
-        });
-    </script>
-</x-app-layout>
-
+</div>
+@endsection

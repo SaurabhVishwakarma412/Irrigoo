@@ -20,34 +20,28 @@ class AdminController extends Controller
             'total_services' => Service::count(),
             'total_requests' => ServiceRequest::count(),
             'total_readings' => SensorData::count(),
-            'unverified_users' => User::where('is_verified', false)->count(),
             'assigned_devices' => FarmerDevice::count(),
         ];
 
         $users = User::latest()->paginate(10);
-        $farmers = User::where('role', 'farmer')->where('is_verified', true)->orderBy('name')->get();
+        $farmers = User::where('role', 'farmer')->orderBy('name')->get();
         $devices = Device::with('manufacturer')->latest()->get();
         $assignments = FarmerDevice::with(['farmer', 'device.manufacturer'])->latest()->take(8)->get();
 
         return view('admin.dashboard', compact('stats', 'users', 'farmers', 'devices', 'assignments'));
     }
 
-    public function verifyUser(User $user)
-    {
-        $user->update(['is_verified' => true]);
-        return back()->with('success', 'User verified successfully.');
-    }
-
     public function assignDevice(Request $request)
     {
         $data = $request->validate([
-            'farmer_id' => ['required', 'exists:users,id'],
-            'device_id' => ['required', 'exists:devices,id'],
+            'farmer_id' => ['required', 'string'],
+            'device_id' => ['required', 'string'],
             'installation_date' => ['nullable', 'date'],
         ]);
 
         $farmer = User::findOrFail($data['farmer_id']);
-        abort_unless($farmer->role === 'farmer' && $farmer->is_verified, 422);
+        Device::findOrFail($data['device_id']);
+        abort_unless($farmer->role === 'farmer', 422);
 
         FarmerDevice::updateOrCreate(
             [
@@ -61,5 +55,16 @@ class AdminController extends Controller
         );
 
         return back()->with('success', 'Device assigned to farmer successfully.');
+    }
+
+    public function verifyUser(User $user)
+    {
+        $user->update([
+            'is_verified' => true,
+            'verified_by' => auth()->id(),
+            'verified_at' => now(),
+        ]);
+
+        return back()->with('success', 'User verified successfully.');
     }
 }
