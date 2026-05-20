@@ -1,12 +1,11 @@
 <x-guest-layout>
-    <div class="mb-6">
+    <div class="mb-4">
         <h1 class="text-2xl font-bold text-gray-900">Create your account</h1>
         <p class="mt-1 text-sm text-gray-600">Choose your role and fill only the details that belong to that role.</p>
     </div>
 
-    <form method="POST" action="{{ route('register') }}" x-data="{ role: '{{ old('role', 'farmer') }}' }">
+    <form  method="POST" action="{{ route('register') }}" x-data="{ role: '{{ old('role', 'farmer') }}' }">
         @csrf
-
         <div>
             <x-input-label for="role" :value="__('Register As')" />
             <select id="role" name="role" x-model="role" class="block mt-1 w-full border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm" required>

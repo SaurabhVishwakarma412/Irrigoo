@@ -142,4 +142,40 @@
             </div>
         </div>
     </section>
+
+    <!-- Contact Form Section -->
+    <section class="py-10 bg-gray-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <h2 class="text-3xl font-bold text-gray-900 text-center">Send Us a Message</h2>
+            <p class="mt-4 text-lg text-gray-600 text-center">
+                Fill out the form below, and our team will get back to you as soon as possible.
+            </p>
+
+            <div class="mt-8 max-w-3xl mx-auto">
+                <form action="/contact" method="POST" class="space-y-6">
+                    @csrf
+                    <div>
+                        <label for="name" class="block text-sm font-medium text-gray-700">Name</label>
+                        <input type="text" id="name" name="name" required class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-emerald-500 focus:ring-emerald-500">
+                    </div>
+
+                    <div>
+                        <label for="email" class="block text-sm font-medium text-gray-700">Email</label>
+                        <input type="email" id="email" name="email" required class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-emerald-500 focus:ring-emerald-500">
+                    </div>
+
+                    <div>
+                        <label for="message" class="block text-sm font-medium text-gray-700">Message</label>
+                        <textarea id="message" name="message" rows="4" required class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-emerald-500 focus:ring-emerald-500"></textarea>
+                    </div>
+
+                    <div>
+                        <button type="submit" class="w-full rounded-md bg-emerald-500 px-4 py-2 text-white font-medium shadow hover:bg-emerald-600 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:ring-offset-2">
+                            Send Message
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </section>
 @endsection

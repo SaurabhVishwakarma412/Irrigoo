@@ -50,4 +50,50 @@
             </div>
         </div>
     </div>
+
+    <!-- Quick Stats Section -->
+<section class="py-10 bg-gray-50">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <h2 class="text-2xl font-bold text-gray-900">Quick Stats</h2>
+        <div class="mt-6 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
+            <div class="rounded-lg bg-white p-6 shadow-sm">
+                <p class="text-sm font-medium text-gray-500">Active Devices</p>
+                <p class="mt-2 text-2xl font-bold text-gray-900">120</p>
+            </div>
+            <div class="rounded-lg bg-white p-6 shadow-sm">
+                <p class="text-sm font-medium text-gray-500">Service Requests</p>
+                <p class="mt-2 text-2xl font-bold text-gray-900">45</p>
+            </div>
+            <div class="rounded-lg bg-white p-6 shadow-sm">
+                <p class="text-sm font-medium text-gray-500">Farmers Registered</p>
+                <p class="mt-2 text-2xl font-bold text-gray-900">300</p>
+            </div>
+            <div class="rounded-lg bg-white p-6 shadow-sm">
+                <p class="text-sm font-medium text-gray-500">Providers Registered</p>
+                <p class="mt-2 text-2xl font-bold text-gray-900">50</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Recent Activity Section -->
+<section class="py-10 bg-white">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <h2 class="text-2xl font-bold text-gray-900">Recent Activity</h2>
+        <div class="mt-6 space-y-4">
+            <div class="rounded-lg bg-gray-50 p-4 shadow-sm">
+                <p class="text-sm text-gray-600">Farmer John added a new device to their farm.</p>
+                <p class="mt-1 text-xs text-gray-400">2 hours ago</p>
+            </div>
+            <div class="rounded-lg bg-gray-50 p-4 shadow-sm">
+                <p class="text-sm text-gray-600">Provider Jane completed a service request for irrigation setup.</p>
+                <p class="mt-1 text-xs text-gray-400">5 hours ago</p>
+            </div>
+            <div class="rounded-lg bg-gray-50 p-4 shadow-sm">
+                <p class="text-sm text-gray-600">Manufacturer Smith updated device firmware for Model X.</p>
+                <p class="mt-1 text-xs text-gray-400">1 day ago</p>
+            </div>
+        </div>
+    </div>
+</section>
 </x-app-layout>

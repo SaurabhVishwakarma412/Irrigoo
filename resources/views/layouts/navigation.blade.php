@@ -2,11 +2,10 @@
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="flex justify-between h-16">
             <div class="flex">
-                <div class="shrink-0 flex items-center">
-                    <a href="{{ auth()->check() ? route('dashboard') : route('login') }}" class="flex items-center gap-3">
-                        <x-application-logo />
-                        <span class="text-lg font-bold tracking-wide text-gray-900">Smart Irrigation</span>
-                    </a>
+                <div class="shrink-0 flex items-center">                     
+                    <a href="{{ auth()->check() ? route('dashboard') : route('login') }}" class="flex items-center gap-3">                         <img src="{{ asset('build/assets/Irrigo-logo.png') }}" alt="Irrigoo Logo" class="h-8 w-auto">                         
+                        <span class="text-lg font-bold tracking-wide text-green-600">Irrigoo</span>                     
+                    </a>                 
                 </div>
 
                 <div class="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex">

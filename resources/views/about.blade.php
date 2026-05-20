@@ -127,4 +127,45 @@
             </div>
         </div>
     </section>
+
+    <!-- Additional Section: Our Mission -->
+    <section class="py-10 bg-gray-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center">
+                <h2 class="text-3xl font-bold text-gray-900">Our Mission</h2>
+                <p class="mt-4 text-lg text-gray-600">
+                    At Irrigoo, we aim to empower farmers, service providers, and manufacturers with smart irrigation solutions
+                    that save water, reduce costs, and promote sustainability.
+                </p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Additional Section: Testimonials -->
+    <section class="py-10 bg-white">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <h2 class="text-3xl font-bold text-gray-900 text-center">What Our Users Say</h2>
+            <div class="mt-8 grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+                <blockquote class="rounded-lg bg-gray-50 p-6 shadow-sm">
+                    <p class="text-sm text-gray-600">
+                        "Irrigoo has transformed the way I manage my farm. The real-time data and service coordination features
+                        are game-changers."
+                    </p>
+                    <footer class="mt-4 text-sm font-semibold text-gray-900">- Farmer John</footer>
+                </blockquote>
+                <blockquote class="rounded-lg bg-gray-50 p-6 shadow-sm">
+                    <p class="text-sm text-gray-600">
+                        "As a service provider, I love how easy it is to connect with farmers and manage requests."
+                    </p>
+                    <footer class="mt-4 text-sm font-semibold text-gray-900">- Provider Jane</footer>
+                </blockquote>
+                <blockquote class="rounded-lg bg-gray-50 p-6 shadow-sm">
+                    <p class="text-sm text-gray-600">
+                        "The platform's support for connected devices has helped us deliver better products to our customers."
+                    </p>
+                    <footer class="mt-4 text-sm font-semibold text-gray-900">- Manufacturer Smith</footer>
+                </blockquote>
+            </div>
+        </div>
+    </section>
 @endsection
