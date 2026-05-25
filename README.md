@@ -1,59 +1,236 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# Irrigoo
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+Irrigoo is a smart IoT irrigation ecosystem built with Laravel. It connects farmers, irrigation service providers, and IoT device manufacturers in one platform so farms can monitor water usage, control irrigation devices, request services, and discover smart irrigation hardware.
 
-## About Laravel
+GitHub Repository: [SaurabhVishwakarma412/Irrigoo](https://github.com/SaurabhVishwakarma412/Irrigoo)
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+## Project Overview
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+Irrigoo is designed for modern agriculture where irrigation decisions can be supported by sensor readings, local weather, service availability, and device management. The platform provides role-based dashboards for each stakeholder:
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+- Farmers can monitor assigned smart devices, view sensor data, toggle irrigation, track water usage, receive weather-based irrigation advice, and request services.
+- Service providers can publish irrigation services, manage incoming farmer requests, update request status, purchase manufacturer devices, and track completed work and earnings.
+- Manufacturers can register IoT irrigation devices, manage product catalogs, view product sales, and make devices available to providers.
 
-## Learning Laravel
+## Key Features
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework. You can also check out [Laravel Learn](https://laravel.com/learn), where you will be guided through building a modern Laravel application.
+- Role-based authentication for farmers, providers, and manufacturers.
+- Farmer dashboard with active devices, water usage, service recommendations, and request history.
+- Smart irrigation toggle for assigned farmer devices.
+- Sensor data simulation and API fetch endpoints for recent readings.
+- Weather-based irrigation advice using Open-Meteo geocoding and forecast APIs.
+- Provider dashboard for service publishing, request management, completed jobs, and earnings.
+- Device purchase workflow for providers.
+- Manufacturer dashboard for IoT device registration and sales tracking.
+- Profile management powered by Laravel Breeze.
+- Responsive Blade UI styled with Tailwind CSS and Alpine.js.
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+## Tech Stack
 
-## Laravel Sponsors
+- Backend: Laravel 12, PHP 8.2
+- Frontend: Blade, Tailwind CSS, Alpine.js, Vite
+- Database: MySQL
+- Authentication: Laravel Breeze
+- APIs: Open-Meteo weather and geocoding APIs
+- Testing: PHPUnit
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+## Main Modules
 
-### Premium Partners
+### Farmer
 
-- **[Vehikl](https://vehikl.com)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Redberry](https://redberry.international/laravel-development)**
-- **[Active Logic](https://activelogic.com)**
+Farmers can register with farm details such as location, crop type, farm name, and farm size. The farmer dashboard shows connected devices, water usage, irrigation status, recommended local services, and recent service requests.
 
-## Contributing
+Important actions:
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+- View assigned IoT irrigation devices.
+- Start or stop irrigation.
+- Fetch or simulate sensor data.
+- Request installation, maintenance, repair, consultation, or monitoring services.
+- View weather-informed irrigation advice.
 
-## Code of Conduct
+### Service Provider
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+Providers can register their organization and service area. Their dashboard helps them publish services, handle farmer requests, and review business performance.
 
-## Security Vulnerabilities
+Important actions:
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+- Add new services.
+- Delete published services.
+- Accept, complete, reject, or keep service requests pending.
+- Purchase devices listed by manufacturers.
+- Track pending requests, completed jobs, and total earnings.
+
+### Manufacturer
+
+Manufacturers can register IoT irrigation products and make them visible to providers. The dashboard also shows sales generated through provider purchases.
+
+Important actions:
+
+- Register devices with price, connectivity, power source, coverage area, target crops, and features.
+- View device catalog.
+- Track recent product sales.
+- Browse services published by providers.
+
+## Important Routes
+
+| Area | Route | Description |
+| --- | --- | --- |
+| Public | `/` | Landing page |
+| Public | `/about` | About page |
+| Public | `/contact` | Contact page |
+| Auth | `/register` | User registration |
+| Auth | `/login` | User login |
+| Dashboard | `/dashboard` | Redirects users to their role-specific dashboard |
+| Farmer | `/farmer/dashboard` | Farmer dashboard |
+| Provider | `/provider/dashboard` | Provider dashboard |
+| Provider | `/provider/purchases` | Provider device purchases |
+| Manufacturer | `/manufacturer/dashboard` | Manufacturer dashboard |
+| Profile | `/profile` | User profile settings |
+
+## Database Tables
+
+The project includes migrations for:
+
+- users
+- farmer_profiles
+- provider_profiles
+- manufacturer_profiles
+- devices
+- farmer_devices
+- sensor_data
+- services
+- service_requests
+- device_purchases
+- cache and jobs tables
+
+## Installation
+
+### Prerequisites
+
+Make sure these are installed:
+
+- PHP 8.2 or higher
+- Composer
+- Node.js and npm
+- MySQL
+
+### Setup Steps
+
+Clone the repository:
+
+```bash
+git clone https://github.com/SaurabhVishwakarma412/Irrigoo.git
+cd Irrigoo
+```
+
+Install PHP dependencies:
+
+```bash
+composer install
+```
+
+Install frontend dependencies:
+
+```bash
+npm install
+```
+
+Create the environment file:
+
+```bash
+cp .env.example .env
+```
+
+Generate the application key:
+
+```bash
+php artisan key:generate
+```
+
+Configure your database in `.env`:
+
+```env
+DB_CONNECTION=mysql
+DB_HOST=127.0.0.1
+DB_PORT=3306
+DB_DATABASE=irrigation_system_db
+DB_USERNAME=root
+DB_PASSWORD=
+```
+
+Run migrations:
+
+```bash
+php artisan migrate
+```
+
+Start the Laravel development server:
+
+```bash
+php artisan serve
+```
+
+In another terminal, start Vite:
+
+```bash
+npm run dev
+```
+
+Open the app at:
+
+```text
+http://127.0.0.1:8000
+```
+
+## Useful Commands
+
+Run frontend build:
+
+```bash
+npm run build
+```
+
+Run tests:
+
+```bash
+php artisan test
+```
+
+Run the combined development workflow defined in `composer.json`:
+
+```bash
+composer run dev
+```
+
+## Environment Notes
+
+- The app uses MySQL by default with the database name `irrigation_system_db`.
+- Weather advice depends on external Open-Meteo API calls.
+- Authentication and profile pages are based on Laravel Breeze.
+- User registration supports three roles: `farmer`, `provider`, and `manufacturer`.
+
+## Project Structure
+
+```text
+app/
+  Http/Controllers/        Application and role-specific controllers
+  Models/                  Eloquent models for users, devices, services, and requests
+  Services/WeatherService.php
+database/migrations/       Database schema files
+resources/views/           Blade templates for public pages and dashboards
+routes/web.php             Web routes and role-based dashboard routing
+routes/auth.php            Authentication routes
+public/                    Public assets
+```
+
+## Future Improvements
+
+- Add real IoT device integration instead of simulated sensor readings.
+- Add notifications for service request status changes.
+- Add admin review or verification workflows if required.
+- Add charts for sensor history and water usage trends.
+- Add payment integration for device purchases and service completion.
 
 ## License
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+This project is open-source and available under the MIT License.
