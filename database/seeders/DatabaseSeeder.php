@@ -17,16 +17,6 @@ class DatabaseSeeder extends Seeder
 {
     public function run()
     {
-        // Create Admin User
-        User::updateOrCreate(['email' => 'admin@irrigation.com'], [
-            'name' => 'Admin User',
-            'email' => 'admin@irrigation.com',
-            'password' => Hash::make('password'),
-            'role' => 'admin',
-            'is_verified' => true,
-            'verified_at' => now(),
-        ]);
-
         // Create Sample Provider
         $provider = User::updateOrCreate(['email' => 'provider@example.com'], [
             'name' => 'Sample Provider',

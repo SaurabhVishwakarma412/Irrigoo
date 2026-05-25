@@ -3,9 +3,7 @@
         <div class="flex flex-col gap-6 md:flex-row md:items-end md:justify-between">
             <div>
                 <div class="flex items-center gap-3">
-                    <div class="flex h-10 w-10 items-center justify-center rounded-xl bg-emerald-500 text-sm font-black tracking-wide text-white">
-                        AG
-                    </div>
+                    <x-application-logo class="h-10 w-auto" />
                     <div>
                         <p class="text-base font-semibold text-white">AG Smart Irrigation</p>
                         <p class="text-sm text-slate-400">Connected farming, clearer decisions, less wasted water.</p>

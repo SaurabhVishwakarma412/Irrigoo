@@ -43,8 +43,8 @@
                         <p class="mt-2 text-sm text-gray-600">Offer connected irrigation devices.</p>
                     </div>
                     <div class="rounded-2xl bg-white p-5 shadow-sm">
-                        <div class="text-xs font-semibold uppercase text-gray-500">Admins</div>
-                        <p class="mt-2 text-sm text-gray-600">Verify users and assign devices safely.</p>
+                        <div class="text-xs font-semibold uppercase text-gray-500">Devices</div>
+                        <p class="mt-2 text-sm text-gray-600">Keep connected equipment visible across farms.</p>
                     </div>
                 </div>
             </div>

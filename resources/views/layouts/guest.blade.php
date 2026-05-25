@@ -14,26 +14,58 @@
         <!-- Scripts -->
         @vite(['resources/css/app.css', 'resources/js/app.js'])
     </head>
-    <body class="font-sans text-gray-900 antialiased relative min-h-screen overflow-x-hidden bg-gradient-to-br from-green-900 via-emerald-800 to-teal-900">
-        <!-- Abstract Background Shapes -->
-        <div class="absolute top-0 left-0 w-full h-full overflow-hidden -z-10 pointer-events-none">
-            <div class="absolute -top-[10%] -left-[10%] w-[40%] h-[40%] rounded-full bg-emerald-500/20 blur-[100px] animate-pulse"></div>
-            <div class="absolute bottom-[20%] right-[10%] w-[30%] h-[30%] rounded-full bg-teal-400/20 blur-[80px]"></div>
-        </div>
+    <body class="font-sans text-slate-900 antialiased min-h-screen overflow-x-hidden bg-[#f5f8f2]">
+        <div class="min-h-screen flex flex-col bg-[radial-gradient(circle_at_12%_16%,rgba(16,185,129,0.18),transparent_28%),radial-gradient(circle_at_88%_12%,rgba(20,184,166,0.14),transparent_26%),linear-gradient(135deg,#f7fbf3_0%,#eef7ed_48%,#e5f3ef_100%)]">
+            <main class="flex-1 grid place-items-center px-4 py-10 sm:px-6 lg:px-8">
+                <div class="w-full max-w-5xl overflow-hidden rounded-[2rem] border border-white/80 bg-white/85 shadow-2xl shadow-emerald-950/10 backdrop-blur">
+                    <div class="grid lg:grid-cols-[0.82fr_1fr]">
+                        <section class="hidden min-h-full bg-emerald-700 p-10 text-white lg:flex lg:flex-col lg:justify-between">
+                            <div>
+                                <a href="/" class="inline-flex items-center gap-3">
+                                    <x-application-logo class="h-11 w-11 bg-white text-emerald-700 shadow-sm" />
+                                    <span class="text-lg font-semibold">AG Smart Irrigation</span>
+                                </a>
+                            </div>
 
-        <div class="min-h-screen flex flex-col">
-            <main class="flex-1 flex flex-col sm:justify-center items-center pt-6 sm:pt-0 pb-12">
-                <div class="mt-8 mb-4">
-                    <a href="/" class="flex items-center gap-2 group">
-                        <svg class="w-12 h-12 text-emerald-400 group-hover:text-emerald-300 transition-colors duration-300 drop-shadow-[0_0_15px_rgba(52,211,153,0.5)]" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 15a4 4 0 004 4h9a5 5 0 10-.1-9.999 5.002 5.002 0 10-9.78 2.096A4.001 4.001 0 003 15z"></path>
-                        </svg>
-                        <span class="text-3xl font-bold text-white tracking-tight drop-shadow-md">Irrigoo</span>
-                    </a>
-                </div>
+                            <div class="space-y-6">
+                                <div class="inline-flex rounded-full bg-emerald-600 px-4 py-2 text-sm font-medium text-emerald-50">
+                                    Smart water decisions start here
+                                </div>
+                                <div>
+                                    <h1 class="text-4xl font-bold leading-tight">Manage irrigation, devices, and services from one calm workspace.</h1>
+                                    <p class="mt-4 max-w-sm text-sm leading-6 text-emerald-50">
+                                        Sign in to monitor farms, connect providers, and keep every field closer to the right amount of water.
+                                    </p>
+                                </div>
+                            </div>
 
-                <div class="w-full sm:max-w-xl px-8 py-8 bg-white/90 backdrop-blur-xl shadow-[0_8px_30px_rgb(0,0,0,0.12)] sm:rounded-3xl border border-white/20 transform transition-all hover:scale-[1.01] duration-500">
-                    {{ $slot }}
+                            <div class="grid grid-cols-3 gap-3 text-sm">
+                                <div class="rounded-2xl bg-emerald-600 p-4">
+                                    <p class="text-2xl font-bold">24/7</p>
+                                    <p class="mt-1 text-emerald-50">Sensor access</p>
+                                </div>
+                                <div class="rounded-2xl bg-emerald-600 p-4">
+                                    <p class="text-2xl font-bold">3</p>
+                                    <p class="mt-1 text-emerald-50">User roles</p>
+                                </div>
+                                <div class="rounded-2xl bg-emerald-600 p-4">
+                                    <p class="text-2xl font-bold">Low</p>
+                                    <p class="mt-1 text-emerald-50">Water waste</p>
+                                </div>
+                            </div>
+                        </section>
+
+                        <section class="px-5 py-8 sm:px-10 lg:px-12">
+                            <div class="mb-8 flex items-center justify-between lg:hidden">
+                                <a href="/" class="inline-flex items-center gap-3">
+                                    <x-application-logo />
+                                    <span class="font-semibold text-slate-900">AG Smart Irrigation</span>
+                                </a>
+                            </div>
+
+                            {{ $slot }}
+                        </section>
+                    </div>
                 </div>
             </main>
 

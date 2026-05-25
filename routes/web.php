@@ -1,6 +1,5 @@
 <?php
 
-use App\Http\Controllers\AdminController;
 use App\Http\Controllers\Api\SensorDataController;
 use App\Http\Controllers\FarmerController;
 use App\Http\Controllers\ManufacturerController;
@@ -19,19 +18,12 @@ Route::middleware('auth')->group(function (): void {
         $user = auth()->user();
 
         return match ($user->role) {
-            'admin' => app(AdminController::class)->index(),
             'farmer' => app(FarmerController::class)->index(app(\App\Services\WeatherService::class)),
             'provider' => app(ProviderController::class)->index(),
             'manufacturer' => app(ManufacturerController::class)->index(),
             default => view('dashboard'),
         };
     })->name('dashboard');
-
-    Route::middleware('role:admin')->prefix('admin')->name('admin.')->group(function (): void {
-        Route::get('/dashboard', [AdminController::class, 'index'])->name('dashboard');
-        Route::post('/device-assignments', [AdminController::class, 'assignDevice'])->name('device-assignments.store');
-        Route::post('/users/{user}/verify', [AdminController::class, 'verifyUser'])->name('users.verify');
-    });
 
     Route::middleware('role:farmer')->prefix('farmer')->name('farmer.')->group(function (): void {
         Route::get('/dashboard', [FarmerController::class, 'index'])->name('dashboard');

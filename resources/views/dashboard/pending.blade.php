@@ -17,7 +17,7 @@
                     
                     <p class="text-center text-gray-600 max-w-lg">
                         Thank you for registering on our IoT-Based Smart Irrigation Platform! 
-                        Your account is currently under review by our administrators. 
+                        Your account is currently under review by our support team.
                         You will be able to access your dashboard and all features once your account has been verified.
                     </p>
 
