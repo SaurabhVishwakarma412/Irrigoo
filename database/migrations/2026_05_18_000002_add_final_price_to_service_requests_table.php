@@ -10,13 +10,14 @@ return new class extends Migration
     {
         Schema::table('service_requests', function (Blueprint $table) {
             $table->decimal('final_price', 10, 2)->nullable()->after('scheduled_date');
+            $table->string('payment_status')->default('unpaid')->after('final_price');
         });
     }
 
     public function down(): void
     {
         Schema::table('service_requests', function (Blueprint $table) {
-            $table->dropColumn('final_price');
+            $table->dropColumn(['final_price', 'payment_status']);
         });
     }
 };

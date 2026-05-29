@@ -3,6 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Models\FarmerDevice;
+use App\Models\Device;
+use App\Models\DevicePurchase;
 use App\Models\Service;
 use App\Models\ServiceRequest;
 use App\Services\WeatherService;
@@ -19,6 +21,12 @@ class FarmerController extends Controller
             ->get();
 
         $farmer = auth()->user();
+        $availableDevices = Device::with('manufacturer')->latest()->get();
+        $devicePurchases = DevicePurchase::with('device.manufacturer')
+            ->where('farmer_id', auth()->id())
+            ->latest()
+            ->take(5)
+            ->get();
 
         $services = Service::with('provider')
             ->when($farmer->location, function ($query, $location) {
@@ -57,7 +65,7 @@ class FarmerController extends Controller
             $irrigationAdvice = null;
         }
 
-        return view('farmer.dashboard', compact('farmerDevices', 'services', 'serviceRequests', 'waterUsage', 'weather', 'irrigationAdvice'));
+        return view('farmer.dashboard', compact('farmerDevices', 'availableDevices', 'devicePurchases', 'services', 'serviceRequests', 'waterUsage', 'weather', 'irrigationAdvice'));
     }
 
     public function toggleIrrigation(Request $request, FarmerDevice $farmerDevice)
@@ -90,5 +98,35 @@ class FarmerController extends Controller
         ]);
 
         return back()->with('success', 'Service request sent to the provider.');
+    }
+
+    public function purchaseDevice(Request $request, Device $device)
+    {
+        $data = $request->validate([
+            'quantity' => ['required', 'integer', 'min:1'],
+        ]);
+
+        $unitPrice = $device->price ?? 0;
+        $purchase = DevicePurchase::create([
+            'farmer_id' => auth()->id(),
+            'device_id' => $device->id,
+            'quantity' => $data['quantity'],
+            'unit_price' => $unitPrice,
+            'total_price' => $unitPrice * $data['quantity'],
+            'payment_status' => 'paid',
+        ]);
+
+        FarmerDevice::firstOrCreate(
+            [
+                'farmer_id' => auth()->id(),
+                'device_id' => $device->id,
+            ],
+            [
+                'status' => 'purchased',
+                'irrigation_on' => false,
+            ]
+        );
+
+        return back()->with('success', 'Product purchased successfully. Payment recorded for order #'.$purchase->id.'.');
     }
 }

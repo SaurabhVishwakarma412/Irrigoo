@@ -17,13 +17,10 @@
                             <x-nav-link :href="route('dashboard').'#overview'" :active="request()->routeIs('dashboard')">
                                 {{ __('Irrigation') }}
                             </x-nav-link>
+                            <x-nav-link :href="route('dashboard').'#products'" :active="false">
+                                {{ __('Products') }}
+                            </x-nav-link>
                         @elseif(Auth::user()->role === 'provider')
-                            <x-nav-link :href="route('dashboard').'#available-devices'" :active="false">
-                                {{ __('Devices Available') }}
-                            </x-nav-link>
-                            <x-nav-link :href="route('provider.purchases.index')" :active="request()->routeIs('provider.purchases.*')">
-                                {{ __('Purchase Products') }}
-                            </x-nav-link>
                             <x-nav-link :href="route('dashboard').'#services'" :active="false">
                                 {{ __('My Services') }}
                             </x-nav-link>
@@ -98,13 +95,10 @@
                     <x-responsive-nav-link :href="route('dashboard').'#overview'" :active="request()->routeIs('dashboard')">
                         {{ __('Irrigation') }}
                     </x-responsive-nav-link>
+                    <x-responsive-nav-link :href="route('dashboard').'#products'" :active="false">
+                        {{ __('Products') }}
+                    </x-responsive-nav-link>
                 @elseif(Auth::user()->role === 'provider')
-                    <x-responsive-nav-link :href="route('dashboard').'#available-devices'" :active="false">
-                        {{ __('Devices Available') }}
-                    </x-responsive-nav-link>
-                    <x-responsive-nav-link :href="route('provider.purchases.index')" :active="request()->routeIs('provider.purchases.*')">
-                        {{ __('Purchase Products') }}
-                    </x-responsive-nav-link>
                     <x-responsive-nav-link :href="route('dashboard').'#services'" :active="false">
                         {{ __('My Services') }}
                     </x-responsive-nav-link>

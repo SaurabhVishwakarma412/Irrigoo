@@ -5,28 +5,32 @@ use App\Http\Controllers\FarmerController;
 use App\Http\Controllers\ManufacturerController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\ProviderController;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
-    return auth()->check()
+    return Auth::check()
         ? redirect()->route('dashboard')
         : view('welcome');
 })->name('home');
 
 Route::middleware('auth')->group(function (): void {
     Route::get('/dashboard', function () {
-        $user = auth()->user();
-
-        return match ($user->role) {
-            'farmer' => app(FarmerController::class)->index(app(\App\Services\WeatherService::class)),
-            'provider' => app(ProviderController::class)->index(),
-            'manufacturer' => app(ManufacturerController::class)->index(),
-            default => view('dashboard'),
+        $route = match (Auth::user()?->role) {
+            'farmer' => 'farmer.dashboard',
+            'provider' => 'provider.dashboard',
+            'manufacturer' => 'manufacturer.dashboard',
+            default => 'dashboard',
         };
+
+        return $route === 'dashboard'
+            ? view('dashboard')
+            : redirect()->route($route);
     })->name('dashboard');
 
     Route::middleware('role:farmer')->prefix('farmer')->name('farmer.')->group(function (): void {
         Route::get('/dashboard', [FarmerController::class, 'index'])->name('dashboard');
+        Route::post('/devices/{device}/purchase', [FarmerController::class, 'purchaseDevice'])->name('devices.purchase');
         Route::post('/devices/{farmerDevice}/toggle-irrigation', [FarmerController::class, 'toggleIrrigation'])->name('devices.toggle');
         Route::post('/services/{service}/request', [FarmerController::class, 'requestService'])->name('services.request');
         Route::get('/api/sensors/{farmerDevice}', [SensorDataController::class, 'fetch'])->name('api.sensors.fetch');
@@ -35,8 +39,6 @@ Route::middleware('auth')->group(function (): void {
 
     Route::middleware('role:provider')->prefix('provider')->name('provider.')->group(function (): void {
         Route::get('/dashboard', [ProviderController::class, 'index'])->name('dashboard');
-        Route::get('/purchases', [ProviderController::class, 'purchases'])->name('purchases.index');
-        Route::post('/devices/{device}/purchase', [ProviderController::class, 'purchase'])->name('devices.purchase');
         Route::post('/services', [ProviderController::class, 'store'])->name('services.store');
         Route::delete('/services/{service}', [ProviderController::class, 'destroy'])->name('services.destroy');
         Route::patch('/requests/{serviceRequest}', [ProviderController::class, 'updateRequest'])->name('requests.update');

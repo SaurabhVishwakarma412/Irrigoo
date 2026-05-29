@@ -17,6 +17,7 @@ class ServiceRequest extends Model
         'preferred_time',
         'notes',
         'final_price',
+        'payment_status',
     ];
 
     protected $casts = [

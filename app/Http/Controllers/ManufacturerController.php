@@ -13,7 +13,7 @@ class ManufacturerController extends Controller
     {
         $devices = Device::where('manufacturer_id', auth()->id())->latest()->get();
         $availableServices = Service::with('provider')->latest()->get();
-        $sales = DevicePurchase::with(['provider', 'device'])
+        $sales = DevicePurchase::with(['farmer', 'device'])
             ->whereHas('device', fn ($query) => $query->where('manufacturer_id', auth()->id()))
             ->latest()
             ->get();

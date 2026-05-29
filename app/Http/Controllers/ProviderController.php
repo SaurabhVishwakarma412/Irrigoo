@@ -4,8 +4,6 @@ namespace App\Http\Controllers;
 
 use App\Models\Service;
 use App\Models\ServiceRequest;
-use App\Models\Device;
-use App\Models\DevicePurchase;
 use Illuminate\Http\Request;
 
 class ProviderController extends Controller
@@ -15,7 +13,6 @@ class ProviderController extends Controller
         $user = auth()->user();
         
         $services = Service::where('provider_id', $user->id)->latest()->get();
-        $availableDevices = Device::with('manufacturer')->latest()->get();
         
         $serviceRequests = ServiceRequest::whereHas('service', function($query) use ($user) {
             $query->where('provider_id', $user->id);
@@ -36,46 +33,14 @@ class ProviderController extends Controller
             'completedJobs', 
             'totalEarnings',
             'recentCompleted',
-            'availableDevices'
         ));
-    }
-
-    public function purchases()
-    {
-        $devices = Device::with('manufacturer')->latest()->get();
-        $purchases = DevicePurchase::with('device.manufacturer')
-            ->where('provider_id', auth()->id())
-            ->latest()
-            ->get();
-
-        return view('provider.purchases', compact('devices', 'purchases'));
-    }
-
-    public function purchase(Request $request, Device $device)
-    {
-        $data = $request->validate([
-            'quantity' => ['required', 'integer', 'min:1'],
-        ]);
-
-        $unitPrice = $device->price ?? 0;
-
-        DevicePurchase::create([
-            'provider_id' => auth()->id(),
-            'device_id' => $device->id,
-            'quantity' => $data['quantity'],
-            'unit_price' => $unitPrice,
-            'total_price' => $unitPrice * $data['quantity'],
-        ]);
-
-        return redirect()->route('provider.purchases.index')
-            ->with('success', 'Product purchased successfully.');
     }
 
     public function store(Request $request)
     {
         $validated = $request->validate([
             'name' => 'required|string|max:255',
-            'type' => 'required|in:installation,maintenance,repair,consultation,monitoring',
+            'type' => 'required|in:installation,repair,maintenance,sensor_calibration',
             'service_area' => 'required|string|max:255',
             'crop_types' => 'nullable|string',
             'base_price' => 'nullable|numeric|min:0',
@@ -116,6 +81,7 @@ class ProviderController extends Controller
 
         if ($validated['status'] === 'completed' && $serviceRequest->final_price === null) {
             $validated['final_price'] = $serviceRequest->service->base_price ?? 0;
+            $validated['payment_status'] = 'paid';
         }
 
         $serviceRequest->update($validated);

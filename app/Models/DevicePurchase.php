@@ -7,11 +7,12 @@ use Illuminate\Database\Eloquent\Model;
 class DevicePurchase extends Model
 {
     protected $fillable = [
-        'provider_id',
+        'farmer_id',
         'device_id',
         'quantity',
         'unit_price',
         'total_price',
+        'payment_status',
     ];
 
     protected $casts = [
@@ -19,9 +20,9 @@ class DevicePurchase extends Model
         'total_price' => 'decimal:2',
     ];
 
-    public function provider()
+    public function farmer()
     {
-        return $this->belongsTo(User::class, 'provider_id');
+        return $this->belongsTo(User::class, 'farmer_id');
     }
 
     public function device()

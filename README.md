@@ -8,19 +8,19 @@ GitHub Repository: [SaurabhVishwakarma412/Irrigoo](https://github.com/SaurabhVis
 
 Irrigoo is designed for modern agriculture where irrigation decisions can be supported by sensor readings, local weather, service availability, and device management. The platform provides role-based dashboards for each stakeholder:
 
-- Farmers can monitor assigned smart devices, view sensor data, toggle irrigation, track water usage, receive weather-based irrigation advice, and request services.
-- Service providers can publish irrigation services, manage incoming farmer requests, update request status, purchase manufacturer devices, and track completed work and earnings.
-- Manufacturers can register IoT irrigation devices, manage product catalogs, view product sales, and make devices available to providers.
+- Farmers can buy smart irrigation products, monitor connected devices, view sensor data, toggle irrigation, track water usage, receive weather-based irrigation advice, and request local services.
+- Service providers can publish installation, repair, maintenance, and sensor calibration services, manage incoming farmer requests, update request status, and track completed work and earnings.
+- Manufacturers can register IoT irrigation devices, manage product catalogs, view product sales, and make devices available to farmers.
 
 ## Key Features
 
 - Role-based authentication for farmers, providers, and manufacturers.
-- Farmer dashboard with active devices, water usage, service recommendations, and request history.
+- Farmer dashboard with product purchasing, active devices, water usage, service recommendations, and request history.
 - Smart irrigation toggle for assigned farmer devices.
 - Sensor data simulation and API fetch endpoints for recent readings.
 - Weather-based irrigation advice using Open-Meteo geocoding and forecast APIs.
 - Provider dashboard for service publishing, request management, completed jobs, and earnings.
-- Device purchase workflow for providers.
+- Device purchase workflow for farmers.
 - Manufacturer dashboard for IoT device registration and sales tracking.
 - Profile management powered by Laravel Breeze.
 - Responsive Blade UI styled with Tailwind CSS and Alpine.js.
@@ -38,14 +38,15 @@ Irrigoo is designed for modern agriculture where irrigation decisions can be sup
 
 ### Farmer
 
-Farmers can register with farm details such as location, crop type, farm name, and farm size. The farmer dashboard shows connected devices, water usage, irrigation status, recommended local services, and recent service requests.
+Farmers can register with farm details such as location, crop type, farm name, and farm size. The farmer dashboard shows products available from manufacturers, connected devices, water usage, irrigation status, recommended local services, and recent service requests.
 
 Important actions:
 
-- View assigned IoT irrigation devices.
+- Buy IoT irrigation products from manufacturers.
+- View purchased IoT irrigation devices.
 - Start or stop irrigation.
 - Fetch or simulate sensor data.
-- Request installation, maintenance, repair, consultation, or monitoring services.
+- Request installation, repair, maintenance, or sensor calibration services.
 - View weather-informed irrigation advice.
 
 ### Service Provider
@@ -57,12 +58,11 @@ Important actions:
 - Add new services.
 - Delete published services.
 - Accept, complete, reject, or keep service requests pending.
-- Purchase devices listed by manufacturers.
 - Track pending requests, completed jobs, and total earnings.
 
 ### Manufacturer
 
-Manufacturers can register IoT irrigation products and make them visible to providers. The dashboard also shows sales generated through provider purchases.
+Manufacturers can register IoT irrigation products and make them visible to farmers. The dashboard also shows sales generated through farmer purchases.
 
 Important actions:
 
@@ -82,8 +82,8 @@ Important actions:
 | Auth | `/login` | User login |
 | Dashboard | `/dashboard` | Redirects users to their role-specific dashboard |
 | Farmer | `/farmer/dashboard` | Farmer dashboard |
+| Farmer | `/farmer/devices/{device}/purchase` | Farmer product purchase |
 | Provider | `/provider/dashboard` | Provider dashboard |
-| Provider | `/provider/purchases` | Provider device purchases |
 | Manufacturer | `/manufacturer/dashboard` | Manufacturer dashboard |
 | Profile | `/profile` | User profile settings |
 
@@ -153,7 +153,7 @@ Configure your database in `.env`:
 DB_CONNECTION=mysql
 DB_HOST=127.0.0.1
 DB_PORT=3306
-DB_DATABASE=irrigation_system_db
+DB_DATABASE=Irrigation_sys_DB
 DB_USERNAME=root
 DB_PASSWORD=
 ```
@@ -204,7 +204,7 @@ composer run dev
 
 ## Environment Notes
 
-- The app uses MySQL by default with the database name `irrigation_system_db`.
+- The app uses MySQL by default with the database name `Irrigation_sys_DB`.
 - Weather advice depends on external Open-Meteo API calls.
 - Authentication and profile pages are based on Laravel Breeze.
 - User registration supports three roles: `farmer`, `provider`, and `manufacturer`.
@@ -227,7 +227,6 @@ public/                    Public assets
 
 - Add real IoT device integration instead of simulated sensor readings.
 - Add notifications for service request status changes.
-- Add admin review or verification workflows if required.
 - Add charts for sensor history and water usage trends.
 - Add payment integration for device purchases and service completion.
 

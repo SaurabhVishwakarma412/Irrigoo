@@ -10,11 +10,12 @@ return new class extends Migration
     {
         Schema::create('device_purchases', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('provider_id')->constrained('users')->cascadeOnDelete();
+            $table->foreignId('farmer_id')->constrained('users')->cascadeOnDelete();
             $table->foreignId('device_id')->constrained()->cascadeOnDelete();
             $table->unsignedInteger('quantity')->default(1);
             $table->decimal('unit_price', 10, 2);
             $table->decimal('total_price', 10, 2);
+            $table->string('payment_status')->default('paid');
             $table->timestamps();
         });
     }

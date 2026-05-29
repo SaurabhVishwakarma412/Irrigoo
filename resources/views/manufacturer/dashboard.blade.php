@@ -117,7 +117,7 @@
                     <div class="p-5 flex items-center justify-between">
                         <div>
                             <h4 class="font-bold text-gray-900">{{ $sale->device->name }}</h4>
-                            <p class="text-sm text-gray-500">Purchased by {{ $sale->provider->organization ?? $sale->provider->name }}</p>
+                            <p class="text-sm text-gray-500">Purchased by {{ $sale->farmer->organization ?? $sale->farmer->name }}</p>
                         </div>
                         <div class="text-right">
                             <p class="font-bold text-emerald-600">${{ number_format($sale->total_price, 2) }}</p>

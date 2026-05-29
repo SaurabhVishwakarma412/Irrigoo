@@ -8,7 +8,7 @@
         <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
             <div>
                 <h2 class="text-3xl font-bold text-gray-900 tracking-tight">Provider Dashboard</h2>
-                <p class="text-gray-500 mt-1">Manage your services, track requests, and grow your business.</p>
+                <p class="text-gray-500 mt-1">Manage installation, repair, maintenance, and sensor calibration requests.</p>
             </div>
             
             <button x-data @click="$dispatch('open-add-service-modal')" class="bg-blue-600 hover:bg-blue-700 text-white px-5 py-2.5 rounded-xl font-medium shadow-sm transition-all hover:shadow-md flex items-center gap-2">
@@ -162,34 +162,6 @@
             </div>
         </div>
 
-        <div id="available-devices" class="bg-white rounded-3xl shadow-sm border border-gray-100 overflow-hidden">
-            <div class="p-6 border-b border-gray-100 bg-gray-50/50">
-                <h3 class="text-xl font-bold text-gray-900">Devices Available to Purchase</h3>
-                <p class="text-sm text-gray-500 mt-1">Products published by manufacturers on the platform.</p>
-            </div>
-
-            <div class="p-6 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                @forelse($availableDevices as $device)
-                    <div class="border border-gray-200 rounded-2xl p-5 bg-white flex flex-col">
-                        <div>
-                            <h4 class="font-bold text-gray-900">{{ $device->name }}</h4>
-                            <p class="text-sm text-blue-600 font-medium">{{ $device->manufacturer->organization ?? $device->manufacturer->name }}</p>
-                            <p class="text-xs text-gray-500 font-mono mt-1">{{ $device->serial_number }}</p>
-                        </div>
-                        <p class="text-sm text-gray-600 mt-3 line-clamp-3">{{ $device->description }}</p>
-                        <div class="mt-4 flex items-center justify-between text-sm">
-                            <span class="text-gray-500">{{ $device->connectivity }}</span>
-                            <span class="font-bold text-emerald-600">${{ number_format($device->price, 2) }}</span>
-                        </div>
-                    </div>
-                @empty
-                    <div class="col-span-full py-8 text-center text-gray-500">
-                        No manufacturer devices are available yet.
-                    </div>
-                @endforelse
-            </div>
-        </div>
-
     </div>
 </div>
 
@@ -219,10 +191,9 @@
                             <label class="block text-sm font-medium text-gray-700 mb-1">Service Type</label>
                             <select name="type" required class="w-full border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500 shadow-sm">
                                 <option value="installation">Installation</option>
-                                <option value="maintenance">Maintenance</option>
                                 <option value="repair">Repair</option>
-                                <option value="consultation">Consultation</option>
-                                <option value="monitoring">Monitoring</option>
+                                <option value="maintenance">Maintenance</option>
+                                <option value="sensor_calibration">Sensor calibration</option>
                             </select>
                         </div>
                         <div>

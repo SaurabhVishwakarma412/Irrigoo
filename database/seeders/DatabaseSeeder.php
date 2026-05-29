@@ -4,6 +4,7 @@ namespace Database\Seeders;
 
 use App\Models\User;
 use App\Models\Device;
+use App\Models\DevicePurchase;
 use App\Models\FarmerProfile;
 use App\Models\FarmerDevice;
 use App\Models\ManufacturerProfile;
@@ -24,8 +25,8 @@ class DatabaseSeeder extends Seeder
             'password' => Hash::make('password'),
             'role' => 'provider',
             'is_verified' => true,
-            'verified_at' => now(),
         ]);
+        
         ProviderProfile::updateOrCreate(['user_id' => $provider->id], [
             'organization' => 'Sample Provider Services',
             'location' => 'Pune, Maharashtra',
@@ -39,8 +40,8 @@ class DatabaseSeeder extends Seeder
             'password' => Hash::make('password'),
             'role' => 'farmer',
             'is_verified' => true,
-            'verified_at' => now(),
         ]);
+
         FarmerProfile::updateOrCreate(['user_id' => $farmer->id], [
             'farm_name' => 'Sample Farm',
             'location' => 'Satara, Maharashtra',
@@ -54,7 +55,6 @@ class DatabaseSeeder extends Seeder
             'password' => Hash::make('password'),
             'role' => 'manufacturer',
             'is_verified' => true,
-            'verified_at' => now(),
         ]);
         ManufacturerProfile::updateOrCreate(['user_id' => $manufacturer->id], [
             'organization' => 'AgriTech IoT',
@@ -82,6 +82,27 @@ class DatabaseSeeder extends Seeder
                 'service_area' => 'Pune, Maharashtra',
                 'crop_types' => 'Sugarcane, Rice, Wheat',
                 'base_price' => 1499,
+            ]
+        );
+
+        Service::updateOrCreate(
+            ['provider_id' => $provider->id, 'name' => 'Sensor Calibration Visit'],
+            [
+                'description' => 'Moisture, water-flow, and valve sensor calibration for installed irrigation devices.',
+                'type' => 'sensor_calibration',
+                'service_area' => 'Satara, Maharashtra',
+                'crop_types' => 'Sugarcane, Rice, Wheat',
+                'base_price' => 799,
+            ]
+        );
+
+        DevicePurchase::updateOrCreate(
+            ['farmer_id' => $farmer->id, 'device_id' => $device->id],
+            [
+                'quantity' => 1,
+                'unit_price' => $device->price ?? 0,
+                'total_price' => $device->price ?? 0,
+                'payment_status' => 'paid',
             ]
         );
 

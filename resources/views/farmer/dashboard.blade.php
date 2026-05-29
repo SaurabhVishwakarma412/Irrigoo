@@ -26,6 +26,12 @@
             @endif
         </div>
 
+        @if(session('success'))
+            <div class="bg-green-50 border-l-4 border-green-500 p-4 rounded-r-lg">
+                <p class="text-sm text-green-700">{{ session('success') }}</p>
+            </div>
+        @endif
+
         @if($irrigationAdvice)
             <div class="bg-gradient-to-r from-emerald-500 to-teal-500 rounded-2xl p-6 text-white shadow-lg shadow-emerald-500/20 flex items-start gap-4">
                 <div class="p-2 bg-white/20 rounded-lg backdrop-blur-sm">
@@ -79,6 +85,67 @@
             </div>
         </div>
 
+        <div id="products" class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            <div class="lg:col-span-2 bg-white rounded-3xl shadow-sm border border-gray-100 overflow-hidden">
+                <div class="p-6 border-b border-gray-100 bg-gray-50/50">
+                    <h3 class="text-xl font-bold text-gray-900">IoT Products</h3>
+                    <p class="text-sm text-gray-500 mt-1">Buy irrigation devices published by manufacturers.</p>
+                </div>
+
+                <div class="p-6 grid grid-cols-1 md:grid-cols-2 gap-6">
+                    @forelse($availableDevices as $device)
+                        <div class="border border-gray-200 rounded-2xl p-5 bg-white flex flex-col">
+                            <div>
+                                <h4 class="font-bold text-gray-900">{{ $device->name }}</h4>
+                                <p class="text-sm text-blue-600 font-medium">{{ $device->manufacturer->organization ?? $device->manufacturer->name }}</p>
+                                <p class="text-xs text-gray-500 font-mono mt-1">{{ $device->serial_number }}</p>
+                            </div>
+                            <p class="text-sm text-gray-600 mt-3 line-clamp-3">{{ $device->description }}</p>
+                            <div class="mt-4 flex items-center justify-between text-sm">
+                                <span class="text-gray-500">{{ $device->connectivity }}</span>
+                                <span class="font-bold text-emerald-600">${{ number_format($device->price, 2) }}</span>
+                            </div>
+                            <form action="{{ route('farmer.devices.purchase', $device) }}" method="POST" class="mt-5 flex items-center gap-3">
+                                @csrf
+                                <input type="number" min="1" name="quantity" value="1" class="w-24 border-gray-300 rounded-lg focus:ring-emerald-500 focus:border-emerald-500 shadow-sm">
+                                <button type="submit" class="flex-1 px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg font-medium shadow-sm transition-colors">
+                                    Buy Product
+                                </button>
+                            </form>
+                        </div>
+                    @empty
+                        <div class="md:col-span-2 py-10 text-center text-gray-500">
+                            No manufacturer products are available yet.
+                        </div>
+                    @endforelse
+                </div>
+            </div>
+
+            <div class="bg-white rounded-3xl shadow-sm border border-gray-100 overflow-hidden">
+                <div class="p-6 border-b border-gray-100 bg-gray-50/50">
+                    <h3 class="text-xl font-bold text-gray-900">Recent Purchases</h3>
+                </div>
+
+                <div class="divide-y divide-gray-100">
+                    @forelse($devicePurchases as $purchase)
+                        <div class="p-5">
+                            <h4 class="font-bold text-gray-900">{{ $purchase->device->name }}</h4>
+                            <p class="text-sm text-gray-500">{{ $purchase->device->manufacturer->organization ?? $purchase->device->manufacturer->name }}</p>
+                            <div class="mt-2 flex justify-between text-sm">
+                                <span class="text-gray-500">Qty {{ $purchase->quantity }}</span>
+                                <span class="font-bold text-emerald-600">${{ number_format($purchase->total_price, 2) }}</span>
+                            </div>
+                            <p class="text-xs text-gray-400 mt-1 capitalize">Payment: {{ $purchase->payment_status }}</p>
+                        </div>
+                    @empty
+                        <div class="p-6 text-center text-gray-500">
+                            You have not purchased any products yet.
+                        </div>
+                    @endforelse
+                </div>
+            </div>
+        </div>
+
         <!-- Devices Section -->
         <div class="bg-white rounded-3xl shadow-sm border border-gray-100 overflow-hidden">
             <div class="p-6 border-b border-gray-100 flex justify-between items-center bg-gray-50/50">
@@ -128,7 +195,7 @@
                             </div>
                             <div>
                                 <span class="block text-xs text-gray-400">Soil Moisture</span>
-                                <span class="font-medium text-gray-900">{{ $fd->sensorData->first()?->soil_moisture ?? 0 }}%</span>
+                                <span class="font-medium text-gray-900">{{ $fd->sensorData->first()?->moisture_level ?? 0 }}%</span>
                             </div>
                         </div>
 
@@ -147,7 +214,7 @@
                         <div class="bg-gray-100 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-3">
                             <svg class="w-8 h-8 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
                         </div>
-                        <p>No devices assigned yet. Contact support to connect devices to your farm.</p>
+                        <p>No devices purchased yet. Buy a product above to add it to your farm.</p>
                     </div>
                 @endforelse
             </div>
@@ -172,7 +239,7 @@
                                     <div class="mt-3 flex items-center gap-4 text-xs font-medium text-gray-500">
                                         <div class="flex items-center gap-1 bg-gray-100 px-2 py-1 rounded-md">
                                             <svg class="w-3.5 h-3.5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
-                                            ${{ number_format($service->price, 2) }}
+                                            ${{ number_format($service->base_price, 2) }}
                                         </div>
                                         <div class="flex items-center gap-1">
                                             <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
@@ -228,6 +295,7 @@
                                 <h4 class="font-bold text-gray-900">{{ $req->service->name }}</h4>
                                 <p class="text-xs text-gray-500 mt-1">Provider: {{ $req->service->provider->name }}</p>
                                 <p class="text-xs text-gray-400 mt-0.5">Scheduled: {{ $req->scheduled_date ? \Carbon\Carbon::parse($req->scheduled_date)->format('M d, Y') : 'N/A' }}</p>
+                                <p class="text-xs text-gray-400 mt-0.5 capitalize">Payment: {{ $req->payment_status ?? 'unpaid' }}</p>
                             </div>
                             <div>
                                 @php

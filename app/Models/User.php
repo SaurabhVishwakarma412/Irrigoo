@@ -27,8 +27,6 @@ class User extends Authenticatable
         'organization',
         'farm_size',
         'is_verified',
-        'verified_by',
-        'verified_at',
     ];
 
     protected $hidden = [
@@ -38,7 +36,6 @@ class User extends Authenticatable
 
     protected $casts = [
         'email_verified_at' => 'datetime',
-        'verified_at' => 'datetime',
         'is_verified' => 'boolean',
         'password' => 'hashed',
     ];
@@ -80,7 +77,7 @@ class User extends Authenticatable
 
     public function devicePurchases()
     {
-        return $this->hasMany(DevicePurchase::class, 'provider_id');
+        return $this->hasMany(DevicePurchase::class, 'farmer_id');
     }
 
     public function serviceRequests()

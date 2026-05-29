@@ -11,8 +11,12 @@ return new class extends Migration
      */
     public function up(): void
     {
+        if (Schema::hasTable('service_requests')) {
+            return;
+        }
+
         Schema::create('service_requests', function (Blueprint $table) {
-                        $table->id();
+            $table->id();
             $table->foreignId('farmer_id')->constrained('users')->onDelete('cascade');
             $table->foreignId('service_id')->constrained('services')->onDelete('cascade');
             $table->string('status')->default('pending'); // pending, accepted, completed, rejected
